@@ -1,15 +1,33 @@
-# from django.contrib.auth.models import authenticate
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import Movie, Theatre, Screening, Seat
-from django.core.exceptions import ObjectDoesNotExist
+from .models import Movie, Theatre, Screening, Seat, Booking, User
+
 
 class ScreeningSerializer(serializers.ModelSerializer):
+    # movie_objects = serializers.SerializerMethodField()
+    # theatre_objects = serializers.SerializerMethodField()
+
     class Meta:
         model = Screening
-        fields = ["movie", "theatre"]
-        
+        fields = [
+            "id",
+            "movie",
+            "theatre",
+            "city",
+            "date_time",
+            # "movie_objects",
+            # "theatre_objects",
+        ]
+
+    # def get_movie_objects(self, obj):
+    #     return MovieSerializer(obj.movie).data
+
+    # def get_theatre_objects(self, obj):
+    #     return TheatreSerializer(obj.theatre).data
+
+
 class MovieSerializer(serializers.ModelSerializer):
-    screenings = ScreeningSerializer(many=True)
+
     class Meta:
         model = Movie
         fields = "__all__"  # Or specify the fields you want to include
@@ -21,58 +39,61 @@ class TheatreSerializer(serializers.ModelSerializer):
         fields = "__all__"  # Or specify the fields you want to include
 
 
-
-
-    # def create(self, validated_data):
-    #     try:
-    #         movie = Movie.objects.get(id=validated_data.pop("movie")["id"])
-    #         theatre = Theatre.objects.get(id=validated_data.pop("theatre")["id"])
-    #         screening = Screening.objects.create(
-    #             movie=movie, theatre=theatre, **validated_data
-    #         )
-    #         return screening
-    #     except ObjectDoesNotExist as e:
-    #         raise serializers.ValidationError(str(e))
-    #     except Exception as e:
-    #         raise serializers.ValidationError("An error occurred: " + str(e))
-
-
 class SeatSerializer(serializers.ModelSerializer):
-    screening = ScreeningSerializer()  # Nested serializer for Screening
 
     class Meta:
         model = Seat
         fields = "__all__"  # Or specify the fields you want to include
 
 
-# # Booking Serializer
-# class BookingSerializer(serializers.ModelSerializer):
-#     user = serializers.StringRelatedField()
-#     screening = ScreeningSerializer()
-#     seats = SeatSerializer(many=True)
+# Booking Serializer
+class BookingSerializer(serializers.ModelSerializer):
+    # user = serializers.StringRelatedField()
+    # screening = ScreeningSerializer()
+    # seats = serializers.PrimaryKeyRelatedField(many=True, queryset=Seat.objects.all())
+    seat_objects = serializers.SerializerMethodField()
 
-#     class Meta:
-#         model = Booking
-#         fields = '__all__'
+    class Meta:
+        model = Booking
+        fields = ["booking_id", "screening", "seats", "status", "seat_objects"]
 
-# class UserSerializer(serializers.ModelSerializer):
-#     password = serializers.CharField(write_only=True)
+    def get_seat_objects(self, obj):
+        seat_objects = Seat.objects.filter(
+            id__in=obj.seats.values_list("id", flat=True)
+        )  # Get all seat objects related to the booking
+        return SeatSerializer(seat_objects, many=True).data
 
-#     class Meta:
-#         model = User
-#         fields = ["id", "username", "name", "email", "password"]
+    def create(self, validated_data):
+        user = self.context["user"]
+        seats = validated_data.pop("seats")
+        booking = Booking.objects.create(user=user, **validated_data)
+        booking.seats.set(seats)  # Set the seats for the booking
+        return booking
 
-#     def create(self, validated_data):
-#         return User.objects.create_user(
-#             username=validated_data["username"], password=validated_data["password"]
-#         )
 
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField()
-#     password = serializers.CharField(write_only=True)
+class UserSerializer(serializers.ModelSerializer):
 
-#     def validate(self, data):
-#         user = authenticate(username=data['username'],password=data['password'])
-#         if user and user.is_active:
-#             return user
-#         raise serializers.validationError("invalid credentials")
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "name", "email", "password"]
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+            email=validated_data["email"],
+            name=validated_data["name"],
+        )
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(username=data["username"], password=data["password"])
+        if user and user.is_active:
+            return user
+        raise serializers.validationError("invalid credentials")

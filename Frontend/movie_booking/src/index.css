@@ -1,0 +1,259 @@
+.login-center {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wrapper {
+  background-color: #fff;
+  padding: 40px;
+  margin: 20px 0px;
+  border-radius: 10px;
+  border: 2px solid gray;
+}
+.one-fourth {
+  width: 25%;
+}
+.half {
+  width: 50%;
+}
+.navbar {
+  display: flex;
+  height: 10vh;
+  background: pink;
+}
+.logo-with-appname {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.app-name {
+  font-size: 25px;
+}
+.city-and-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+.city-selection {
+  font-size: 5px;
+}
+.select-city {
+  font-size: 20px;
+}
+.options {
+  font-size: 20px;
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+}
+.profile-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.profile-span {
+  font-size: 20px;
+  font-weight: 500;
+}
+.five-items {
+  display: flex;
+  width: 20%;
+  justify-content: space-around;
+}
+.card-replace {
+  margin-bottom: 50px;
+}
+.title {
+  padding-top: 10px;
+  width: 250px;
+}
+.black {
+  background-color: rgb(38, 37, 37);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  padding: 0px 10px;
+  font-size: 18px;
+}
+.rating-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+.genre1 {
+  color: rgb(119, 115, 115);
+}
+.movie-detail-background {
+  display: flex;
+  height: 90vh;
+  justify-content: center;
+  align-items: center;
+}
+.movie-detail {
+  display: flex;
+  justify-content: center;
+  border: 1px solid black;
+  padding: 20px;
+  flex-direction: column;
+}
+.poster-trailer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.without-img {
+}
+.movie {
+  padding-top: 10px;
+  margin: 0px;
+}
+.actors {
+  width: 1000px;
+}
+.director,
+.actors,
+.languages,
+.genre2,
+.rating,
+.duration {
+  font-weight: 400;
+  font-size: 18px;
+  color: rgb(57, 54, 54);
+}
+.description {
+  margin: 5px 0px 10px 0px;
+  color: rgb(95, 93, 93);
+}
+.book-tickets-div {
+  text-align: end;
+}
+.all-screenings-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+}
+.screenings-border {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  padding: 40px;
+  min-height: 80vh;
+  width: 800px;
+  gap: 50px;
+}
+.dates {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.each-screen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.left-theater-details {
+  display: flex;
+  flex-direction: column;
+}
+.theatre-star {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.theatre-name {
+  margin: 0px;
+  font-size: 30px;
+  font-weight: 300;
+}
+.time {
+  margin: 0px;
+}
+.area {
+  padding-left: 30px;
+}
+.seating-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 90vh;
+}
+.seating-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+}
+.seating-border {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  min-height: 60vh;
+  min-width: 50vw;
+}
+.title-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.continue {
+  font-size: 25px;
+}
+
+.App {
+  text-align: center;
+}
+
+.seat-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.seat {
+  padding: 10px;
+  border: 1px solid black;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.premium {
+  background-color: gold;
+}
+
+.regular {
+  background-color: lightgray;
+}
+
+.booked {
+  background-color: red;
+  color: white;
+}
+.booking-detail-background{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+  flex-direction: column;
+  gap: 50px;
+}
+.booking-details{
+    border: 2px solid black;
+    min-height: 60vh;
+    min-width: 50vw;
+    padding: 40px;
+}

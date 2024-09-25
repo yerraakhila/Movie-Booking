@@ -1,6 +1,6 @@
 from django.db import models
 
-# from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 # Movie Model
@@ -12,9 +12,12 @@ class Movie(models.Model):
     review = models.TextField()
     genre = models.CharField(max_length=100)
     languages = models.CharField(max_length=255)
-    release_date = models.TextField()
-    running_time = models.TextField()
+    release_date = models.DateField()
+    running_time = models.PositiveIntegerField()
     trailer_url = models.URLField()
+    poster_url = models.URLField()
+    actors = models.CharField(max_length=255)
+    director = models.CharField(max_length=255)
 
 
 # Theatre Model
@@ -34,7 +37,8 @@ class Screening(models.Model):
     theatre = models.ForeignKey(
         Theatre, on_delete=models.CASCADE, related_name="screenings"
     )
-    # date_time = models.DateTimeField()
+    city = models.CharField(max_length=100)
+    date_time = models.DateTimeField()
 
 
 # Seat Model
@@ -44,39 +48,53 @@ class Seat(models.Model):
     number = models.PositiveIntegerField()
     is_premium = models.BooleanField(default=False)
     is_booked = models.BooleanField(default=False)
-    cost = models.DecimalField(max_digits=6, decimal_places=2)
+    cost = models.PositiveIntegerField()
     screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
 
 
-# # User Model
-# class UserManager(BaseUserManager):
-#     def create_user(self,username,password,**extra_fields):
-#         if not username:
-#             raise ValueError("username should be provided")
-#         user = self.model(username=username,**extra_fields)
-#         user.set_password(password)
-#         user.save()
-#         return user
+# User Model
+class UserManager(BaseUserManager):
+    def create_user(self, username, password, name, email, **extra_fields):
+        if not username:
+            raise ValueError("username should be provided")
+        if not email:
+            raise ValueError("email should be provided")
+        user = self.model(username=username, name=name, email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
 
-#     def create_superuser(self,username,password,**extra_fields):
-#         extra_fields.setdefault("is_staff",True)
-#         extra_fields.setdefault("is_superuser",True)
-#         return self.create_superuser(self,username,password,**extra_fields)
+    def create_superuser(self, username, password, name, email, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_superuser(
+            self, username, password, name, email, **extra_fields
+        )
 
-# class User(AbstractBaseUser):
-#     id = models.AutoField(primary_key=True)
-#     username = models.CharField(max_length=20,unique=True)
-#     name = models.CharField(max_length=20)
-#     email = models.CharField(max_length=40)
-#     password = models.CharField(max_length=10)
-#     is_active = models.BooleanField(default=True)
 
-#     USERNAME_FIELD = "username"
-#     objects = UserManager()
+class User(AbstractBaseUser):
+    id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=20)
+    email = models.CharField(max_length=40)
+    password = models.CharField(max_length=10)
+    is_active = models.BooleanField(default=True)
 
-# # Booking Model
-# class Booking(models.Model):
-#     booking_id = models.AutoField(primary_key=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
-#     seats = models.ManyToManyField(Seat)
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["name", "email"]
+
+    objects = UserManager()
+
+
+# Booking Model
+class Booking(models.Model):
+    class BookingStatus(models.TextChoices):
+        PENDING = "pending", "Pending"
+        CONFIRMED = "confirmed", "Confirmed"
+        CANCELLED = "cancelled", "Cancelled"
+
+    booking_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
+    screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
+    seats = models.ManyToManyField(Seat)
+    status = models.CharField(max_length=20, choices=BookingStatus.choices)
