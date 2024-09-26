@@ -1,5 +1,6 @@
 import random
 from django.utils import timezone
+import pytz  # Add this import for timezone conversion
 from .models import Booking, Movie, Theatre, Screening, Seat, User
 from .serializers import (
     ScreeningSerializer,
@@ -10,29 +11,42 @@ from .serializers import (
     BookingSerializer,
 )
 
+# Define Indian timezone
+INDIAN_TIMEZONE = pytz.timezone("Asia/Kolkata")
+
 
 def generate_seats(screening):
-    is_premium = True
-    cost = 500
+    seats = []
     for row_num in range(7):
         row = chr(ord("A") + row_num)
+        is_premium = row_num == 0
+        cost = 500 if is_premium else 300
         for number in range(1, 11):
-            Seat.objects.create(
-                row=row,
-                number=number,
-                is_premium=is_premium,
-                is_booked=False,
-                cost=cost,
-                screening=screening,
+            seats.append(
+                Seat(
+                    row=row,
+                    number=number,
+                    is_premium=is_premium,
+                    is_booked=False,
+                    cost=cost,
+                    screening=screening,
+                )
             )
-        is_premium = False
-        cost = 300
+    Seat.objects.bulk_create(seats)
 
 
 def generate_random_screening_times():
-    # Generate two random screenings times between 9 AM and 6 PM with a 4-hour gap
-    start_time = timezone.now().replace(hour=9, minute=0, second=0, microsecond=0)
-    end_time = timezone.now().replace(hour=18, minute=0, second=0, microsecond=0)
+    # Set the start and end time for screenings in IST timezone
+    start_time = (
+        timezone.now()
+        .astimezone(INDIAN_TIMEZONE)
+        .replace(hour=9, minute=0, second=0, microsecond=0)
+    )
+    end_time = (
+        timezone.now()
+        .astimezone(INDIAN_TIMEZONE)
+        .replace(hour=18, minute=0, second=0, microsecond=0)
+    )
 
     # Calculate the total available time range in minutes
     available_minutes = (end_time - start_time).seconds // 60
@@ -49,7 +63,6 @@ def generate_random_screening_times():
 
 
 def generate_screening(movie, theatre):
-
     for i in range(1, 6):  # Create screenings for the next 5 days
         # Get random screening times for the day
         screening_times = generate_random_screening_times()
@@ -74,4 +87,7 @@ def generate_screening(movie, theatre):
 def create_dummy_data(apps, schema_editor):
     for movie in Movie.objects.all():
         for theatre in Theatre.objects.all():
-            generate_screening(movie, theatre)
+            # Don't generate screenings for some movies
+            regional = movie.id != 12 or theatre.city == "Hyderabad"
+            if random.randint(0, 5) % 5 != 0 and regional:
+                generate_screening(movie, theatre)

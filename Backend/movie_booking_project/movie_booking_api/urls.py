@@ -15,6 +15,7 @@ from .views import (
     UserProfileView,
     SigninView,
     SignupView,
+    SingleScreeningInfoView,
 )
 
 urlpatterns = [
@@ -28,23 +29,23 @@ urlpatterns = [
         name="movies-list-by-city",
     ),
     path(
-        "movie-detail/<int:movie_id>/",
+        "<str:city>/movie-detail/<int:movie_id>/",
         csrf_exempt(MovieDetailView.as_view()),
         name="movie-detail",
     ),
     path(
-        "movie-screenings/<int:movie_id>/",
+        "<str:city>/movie-screenings/<int:movie_id>/<str:date>/",
         csrf_exempt(MovieScreeningsView.as_view()),
         name="movie-screenings",
     ),
     path(
-        "screening-seats/<int:screening_id>/",
+        "<str:city>/screening-seats/<int:screening_id>/",
         csrf_exempt(ScreeningSeatsView.as_view()),
         name="screening-seats",
     ),
     path("select-seats/", csrf_exempt(SelectSeatsView.as_view()), name="select-seats"),
     path(
-        "booking-detail/<int:booking_id>/",
+        "<str:city>/booking-detail/<int:booking_id>/",
         csrf_exempt(BookingDetailInfoView.as_view()),
         name="booking-detail-info",
     ),
@@ -54,7 +55,7 @@ urlpatterns = [
         name="booking-pay",
     ),
     path(
-        "booking-confirmed-detail/<int:booking_id>/",
+        "<str:city>/booking-confirmed-detail/<int:booking_id>/",
         csrf_exempt(BookingConfirmedDetailView.as_view()),
         name="booking-confirmed-details",
     ),
@@ -66,4 +67,9 @@ urlpatterns = [
     path("user-profile/", csrf_exempt(UserProfileView.as_view()), name="user-profile"),
     path("signup/", csrf_exempt(SignupView.as_view()), name="signup"),
     path("signin/", csrf_exempt(SigninView.as_view()), name="signin"),
+    path(
+        "<str:city>/single-screening/<int:screening_id>/",
+        csrf_exempt(SingleScreeningInfoView.as_view()),
+        name="single-screening-info",
+    ),
 ]

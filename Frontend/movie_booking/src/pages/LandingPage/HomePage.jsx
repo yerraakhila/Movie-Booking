@@ -1,13 +1,13 @@
-import AllMovies from "../../components/AllMovies";
-import Navbar from "../../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { getCity } from "../../helper/user";
+import { useEffect } from "react";
 
 function HomePage() {
-  return (
-    <div>
-      <Navbar/>
-      <AllMovies/>
-    </div>
-    
-  );
+  let navigate = useNavigate()
+  useEffect(() => {
+    const city = getCity(); // Get the city
+    navigate("/movies/" + city); // Navigate to the city route
+  }, [navigate]); 
+  return <></>;
 }
 export default HomePage;

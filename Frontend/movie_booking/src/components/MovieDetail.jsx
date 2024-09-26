@@ -4,18 +4,30 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function MovieDetail() {
-  const { id } = useParams();
+  const { id, city } = useParams();
   const [movie, setMovie] = useState({});
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/movie-detail/" + id)
+      .get("http://127.0.0.1:8000/api/" + city + "/movie-detail/" + id)
       .then((response) => setMovie(response.data))
       .catch((error) => console.log(error));
   }, [id]);
+
+  function getTodayFormatted() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  let date = getTodayFormatted();
   let navigate = useNavigate();
   function handleClick(e) {
     e.preventDefault();
-    navigate("/movieScreeningsPage/" + id);
+    navigate("/" + city + "/movie_screenings/" + id + "/" + date);
   }
 
   return (

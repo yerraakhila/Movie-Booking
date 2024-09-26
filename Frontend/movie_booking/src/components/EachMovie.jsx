@@ -1,12 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import { CiStar } from "react-icons/ci";
 
+
 function EachMovie(props) {
+  const { city } = useParams()
   let navigate = useNavigate();
   const { poster_url, rating, title, id, genre, running_time } = props.data;
   function handleClick(e) {
     e.preventDefault();
-    navigate("/movieDetailPage/" + id);
+    navigate("/"+city+"/movie/" + id);
   }
   return (
     <div class="five-items">

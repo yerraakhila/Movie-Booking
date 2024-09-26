@@ -1,18 +1,45 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CiStar } from "react-icons/ci";
 
 function EachScreening(props) {
+  const { city } = useParams();
   let navigate = useNavigate();
-  const { id, theatre, date_time } = props.data;
-  const time = new Date(date_time).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+  const { theatre_name, address, screenings } = props.data;
+  function extractTime(dateTimeString) {
+    // Create a Date object from the input string
+    const date = new Date(dateTimeString);
 
-  function handleClick(e) {
+    // Extract the hours and minutes
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    // Determine AM or PM suffix
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    // Convert hours from 24-hour to 12-hour format
+    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+
+    // Format minutes to ensure two digits
+    const formattedMinutes = String(minutes).padStart(2, "0");
+
+    // Return the formatted time string
+    return `${hours}:${formattedMinutes}${amPm}`;
+  }
+  function extractDate(dateTimeString) {
+    // Create a Date object from the input string
+    const date = new Date(dateTimeString);
+
+    // Extract the year, month, and day
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+
+    // Return the formatted date string
+    return `${year}-${month}-${day}`;
+  }
+  function handleClick(e, id) {
     e.preventDefault();
-    navigate("/ScreenSeatingPage/" + id);
+    navigate("/" + city + "/screening_seats/" + id);
   }
 
   return (
@@ -20,16 +47,22 @@ function EachScreening(props) {
       <div className="left-theater-details">
         <div className="theatre-star">
           <CiStar size={20} />
-          <h5 className="theatre-name">Apsara Theatre</h5>
+          <h5 className="theatre-name">{theatre_name}</h5>
         </div>
         <div>
-          <p className="area">Whitefield</p>
+          <p className="area">{address}</p>
         </div>
       </div>
       <div>
-        <button className="time" onClick={handleClick}>
-          {time}
-        </button>
+        {screenings.map((obj) => (
+          <button
+            className="time"
+            onClick={(e) => handleClick(e, obj.id)}
+            key={obj.id}
+          >
+            {extractTime(obj.date_time)}
+          </button>
+        ))}
       </div>
     </div>
   );

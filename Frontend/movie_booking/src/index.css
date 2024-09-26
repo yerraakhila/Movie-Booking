@@ -166,7 +166,7 @@
 }
 .theatre-star {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   gap: 10px;
 }
@@ -217,10 +217,8 @@
 
 .seat-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(10, 1fr);
   gap: 10px;
-  max-width: 300px;
-  margin: 0 auto;
 }
 
 .seat {
@@ -243,17 +241,17 @@
   background-color: red;
   color: white;
 }
-.booking-detail-background{
-    display: flex;
+.booking-detail-background {
+  display: flex;
   justify-content: center;
   align-items: center;
   height: 90vh;
   flex-direction: column;
   gap: 50px;
 }
-.booking-details{
-    border: 2px solid black;
-    min-height: 60vh;
-    min-width: 50vw;
-    padding: 40px;
+.booking-details {
+  border: 2px solid black;
+  min-height: 60vh;
+  min-width: 50vw;
+  padding: 40px;
 }

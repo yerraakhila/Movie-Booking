@@ -9,13 +9,18 @@ import { getToken } from "../helper/user";
 function ScreenSeating() {
   const [seats, setSeats] = useState([]);
   const [newlyBookedSeats, setNewlyBookedSeats] = useState([]);
-  const { id } = useParams();
+  const { id, city } = useParams();
+  const [screening, setScreening] = useState({});
+  
+
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/screening-seats/" + id + "/")
+      .get("http://127.0.0.1:8000/api/" + city + "/screening-seats/" + id + "/")
       .then((Response) => setSeats(Response.data))
       .catch((error) => console.log(error));
-  }, []);
+  }, [id]);
+  
+
   const handleSeatClick = (id, is_booked) => {
     const updatedSeats = seats.map((seat) =>
       seat.id === id ? { ...seat, is_booked: !seat.is_booked } : seat
@@ -27,6 +32,15 @@ function ScreenSeating() {
       setNewlyBookedSeats(newlyBookedSeats.filter((seatId) => seatId !== id)); // Remove if unbooked
     }
   };
+  useEffect(() => {
+    axios
+      .get(
+        "http://127.0.0.1:8000/api/" + city + "/single-screening/" + id + "/"
+      )
+      .then((Response) => setScreening(Response.data))
+      .catch((error) => console.log(error));
+  }, [id]);
+
   const navigate = useNavigate();
   function handleClick(e) {
     e.preventDefault();
@@ -55,12 +69,36 @@ function ScreenSeating() {
       )
       .catch((error) => console.log(error));
   }
+
+  function extractTime(dateTimeString) {
+    // Create a Date object from the input string
+    const date = new Date(dateTimeString);
+
+    // Extract the hours and minutes
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    // Determine AM or PM suffix
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    // Convert hours from 24-hour to 12-hour format
+    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+
+    // Format minutes to ensure two digits
+    const formattedMinutes = String(minutes).padStart(2, "0");
+
+    // Return the formatted time string
+    return `${hours}:${formattedMinutes}${amPm}`;
+  }
   return (
     <div className="seating-background">
       <div className="seating-info">
         <div className="title-time">
-          <h1>Tumbad</h1>
-          <h4>11:00 PM</h4>
+        <h1>{screening.movie_object.title}</h1>
+          <h4>
+            {screening.theatre_object.name}, {screening.theatre_object.address}
+          </h4>
+          <h4>{extractTime(screening.date_time)}</h4>
         </div>
         <div className="seating-border">
           <div className="seat-container">

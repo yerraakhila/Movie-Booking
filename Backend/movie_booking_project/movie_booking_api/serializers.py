@@ -4,8 +4,8 @@ from .models import Movie, Theatre, Screening, Seat, Booking, User
 
 
 class ScreeningSerializer(serializers.ModelSerializer):
-    # movie_objects = serializers.SerializerMethodField()
-    # theatre_objects = serializers.SerializerMethodField()
+    movie_object = serializers.SerializerMethodField()
+    theatre_object = serializers.SerializerMethodField()
 
     class Meta:
         model = Screening
@@ -15,15 +15,15 @@ class ScreeningSerializer(serializers.ModelSerializer):
             "theatre",
             "city",
             "date_time",
-            # "movie_objects",
-            # "theatre_objects",
+            "movie_object",
+            "theatre_object",
         ]
 
-    # def get_movie_objects(self, obj):
-    #     return MovieSerializer(obj.movie).data
+    def get_movie_object(self, obj):
+        return MovieSerializer(obj.movie).data
 
-    # def get_theatre_objects(self, obj):
-    #     return TheatreSerializer(obj.theatre).data
+    def get_theatre_object(self, obj):
+        return TheatreSerializer(obj.theatre).data
 
 
 class MovieSerializer(serializers.ModelSerializer):

@@ -40,6 +40,13 @@ class Screening(models.Model):
     city = models.CharField(max_length=100)
     date_time = models.DateTimeField()
 
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["movie", "city", "date_time"], name="movie_city_datetime_index"
+            ),
+        ]
+
 
 # Seat Model
 class Seat(models.Model):

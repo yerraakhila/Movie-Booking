@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.utils import timezone
 from venv import logger
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -121,7 +123,7 @@ class MoviesListByCityView(APIView):
 
 # select movie
 class MovieDetailView(APIView):
-    def get(self, request, movie_id):
+    def get(self, request, city, movie_id):
         try:
             # Try to get the movie by its ID
             movie = Movie.objects.get(id=movie_id)
@@ -158,13 +160,30 @@ class MovieDetailView(APIView):
 
 # click on book tickets
 class MovieScreeningsView(APIView):
-    def get(self, request, movie_id):
+    def get(self, request, city, date, movie_id):
         try:
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            start_datetime = timezone.make_aware(
+                datetime.combine(target_date, datetime.min.time())
+            )
+            end_datetime = timezone.make_aware(
+                datetime.combine(target_date, datetime.max.time())
+            )
             # Fetch the movie or return 404 if not found
             movie = get_object_or_404(Movie, id=movie_id)
 
+            print(
+                f"Fetching screenings for Movie ID: {movie_id}, City: {city}, Date: {start_datetime, end_datetime}"
+            )
+
             # Get all screenings related to this movie
-            movie_screenings = Screening.objects.filter(movie=movie)
+            from django.db.models import Q
+
+            movie_screenings = Screening.objects.filter(
+                Q(movie=movie)
+                & Q(city=city)
+                & Q(date_time__range=(start_datetime, end_datetime))
+            )
 
             # Serialize the screenings
             serialized = ScreeningSerializer(movie_screenings, many=True)
@@ -193,7 +212,7 @@ class MovieScreeningsView(APIView):
 class ScreeningSeatsView(APIView):
     # permission_classes = [IsAuthenticated]
 
-    def get(self, request, screening_id):
+    def get(self, request, city, screening_id):
         try:
             # Try to fetch seats related to the screening ID
             seats = Seat.objects.filter(screening_id=screening_id)
@@ -450,3 +469,17 @@ class SigninView(APIView):
                 status=status.HTTP_200_OK,
             )
         return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class SingleScreeningInfo(APIView):
+#     def get(self,request,screening_id):
+#         screening = Screening.objects.get(id=screening_id)
+#         serialized = ScreeningSerializer(screening)
+#         return Response(serialized.data, status=status.HTTP_200_OK)
+
+# get single screening
+class SingleScreeningInfoView(APIView):
+    def get(self, request, city, screening_id):
+        # Use get_object_or_404 for better error handling
+        screening = get_object_or_404(Screening, id=screening_id)
+        serialized = ScreeningSerializer(screening)
+        return Response(serialized.data, status=status.HTTP_200_OK)     

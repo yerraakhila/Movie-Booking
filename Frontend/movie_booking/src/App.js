@@ -9,6 +9,7 @@ import MovieScreeningsPage from "./pages/MovieScreeningsPage/MovieScreeningsPage
 import ScreeningSeatingPage from "./pages/ScreeningSeatingPage/ScreeningSeatingPage.jsx";
 import BookingDetailPage from "./pages/BookingDetailPage/BookingDetailPage.jsx";
 import BookingConfirmedPage from "./pages/BookingConfirmedPage/BookingConfirmedPage.jsx";
+import LandingPage from "./pages/LandingPage/LandingPage.jsx";
 
 function App() {
   return (
@@ -17,18 +18,22 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="/movieDetailPage/:id" element={<MovieDetailPage />} />
+        <Route path="/movies/:city" element={<LandingPage />} />
+        <Route path="/:city/movie/:id" element={<MovieDetailPage />} />
         <Route
-          path="/movieScreeningsPage/:id"
+          path="/:city/movie_screenings/:id/:date"
           element={<MovieScreeningsPage />}
         />
         <Route
-          path="/screenSeatingPage/:id"
+          path="/:city/screening_seats/:id/"
           element={<ScreeningSeatingPage />}
         />
-        <Route path="/bookingDetailPage/:id" element={<BookingDetailPage />} />
         <Route
-          path="/bookingConfirmedPage/:id"
+          path="/:city/booking_detials/:id"
+          element={<BookingDetailPage />}
+        />
+        <Route
+          path="/:city/booking_confirmation/:id"
           element={<BookingConfirmedPage />}
         />
       </Routes>

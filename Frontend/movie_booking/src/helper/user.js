@@ -15,3 +15,15 @@ export function clearUser() {
   localStorage.removeItem("user");
   localStorage.removeItem("token");
 }
+
+export function setCity(city) {
+  localStorage.setItem("city", city);
+}
+
+export function getCity() {
+  const city = localStorage.getItem("city");
+  if (!city) {
+    return "Banglore";
+  }
+  return city;
+}
