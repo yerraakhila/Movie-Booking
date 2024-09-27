@@ -20,66 +20,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-class AddScreeningView(APIView):
-    def post(self, request):
-        from .generate import create_dummy_data
-
-        create_dummy_data()
-        # movie = Movie.objects.get(id=request.data.get("movie"))
-        # theatre = Theatre.objects.get(id=request.data.get("theatre"))
-        # serialized = ScreeningSerializer(data=request.data)
-        # if serialized.is_valid():
-        #     serialized.save()
-        #     return Response(serialized.data, status=status.HTTP_201_CREATED)
-        # else:
-        #     return Response(
-        #         {"errors": serialized.errors}, status=status.HTTP_400_BAD_REQUEST
-        #     )
-
-
-class AddSeatView(APIView):
-    def post(self, request):
-        screening = Screening.objects.get(id=request.data.get("screening"))
-        serialized = SeatSerializer(data=request.data)
-        if serialized.is_valid():
-            serialized.save()
-            return Response(serialized.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                {"errors": serialized.errors}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-# class MoviesListByCityView(APIView):
-#     def get(self, request, city):
-#         theatres = Theatre.objects.filter(city=city)
-#         theatre_ids = theatres.values_list("id", flat=True)
-#         theatre_ids_list = list(theatre_ids)
-#         screenings = Screening.objects.filter(theatre_id__in=theatre_ids_list)
-#         movied_ids = screenings.values_list("movie_id", flat=True)
-#         movies = Movie.objects.filter(id__in=movied_ids)
-#         serialized = MovieSerializer(movies,many=True)
-#         return Response(serialized.data, status=status.HTTP_200_OK)
-
-
 # select city
 class MoviesListByCityView(APIView):
     def get(self, request, city):
         try:
-            # Get theatres in the specified city
-            theatres = Theatre.objects.filter(city=city)
-            if not theatres.exists():
-                return Response(
-                    {"error": "No theatres found in this city."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-            # Extract theatre IDs
-            theatre_ids = theatres.values_list("id", flat=True)
-            theatre_ids_list = list(theatre_ids)
-
-            # Get screenings in those theatres
-            screenings = Screening.objects.filter(theatre_id__in=theatre_ids_list)
+            # Get screenings in the city
+            screenings = Screening.objects.filter(city=city)
             if not screenings.exists():
                 return Response(
                     {"error": "No screenings available for theatres in this city."},
@@ -91,6 +37,13 @@ class MoviesListByCityView(APIView):
 
             # Get movies based on those IDs
             movies = Movie.objects.filter(id__in=movie_ids)
+            if "language" in request.query_params:
+                movies = movies.filter(languages=request.query_params.get("language"))
+            if "genre" in request.query_params:
+                movies = movies.filter(
+                    genre__contains=request.query_params.get("genre")
+                )
+
             if not movies.exists():
                 return Response(
                     {"error": "No movies found for this city."},
@@ -112,14 +65,12 @@ class MoviesListByCityView(APIView):
             )
 
 
-# class MovieDetailView(APIView):
-#     def get(self, request, movie_id):
-#         try:
-#             movie = Movie.objects.get(id=movie_id)
-#             serialized = MovieSerializer(movie)
-#             return Response(serialized.data, status=status.HTTP_200_OK)
-#         except:
-#             return Response({"movie with this id not found"},status=status.HTTP_400_BAD_REQUEST)
+class MovieSearchView(APIView):
+    def get(self, request):
+        search_text = request.query_params.get("query", "")
+        movies = Movie.objects.filter(title__icontains=search_text).all()
+        serialized = MovieSerializer(movies, many=True)
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 # select movie

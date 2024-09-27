@@ -1,12 +1,11 @@
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from .views import (
+    MovieSearchView,
     MoviesListByCityView,
-    AddScreeningView,
     MovieDetailView,
     MovieScreeningsView,
     ScreeningSeatsView,
-    AddSeatView,
     SelectSeatsView,
     BookingDetailInfoView,
     BookingPayView,
@@ -20,13 +19,14 @@ from .views import (
 
 urlpatterns = [
     path(
-        "add-screening/", csrf_exempt(AddScreeningView.as_view()), name="add-screening"
-    ),
-    path("add-seat/", csrf_exempt(AddSeatView.as_view()), name="add-seat"),
-    path(
         "movies/<str:city>/",
         csrf_exempt(MoviesListByCityView.as_view()),
         name="movies-list-by-city",
+    ),
+    path(
+        "movies-search/",
+        csrf_exempt(MovieSearchView.as_view()),
+        name="movies-search",
     ),
     path(
         "<str:city>/movie-detail/<int:movie_id>/",
