@@ -10,6 +10,8 @@ import ScreeningSeatingPage from "./pages/ScreeningSeatingPage/ScreeningSeatingP
 import BookingDetailPage from "./pages/BookingDetailPage/BookingDetailPage.jsx";
 import BookingConfirmedPage from "./pages/BookingConfirmedPage/BookingConfirmedPage.jsx";
 import LandingPage from "./pages/LandingPage/LandingPage.jsx";
+import MyBookingsPage from "./pages/MyBookingsPage/MyBookingsPage.jsx";
+import UserProfilePage from "./pages/UserProfilePage/UserProfilePage.jsx";
 
 function App() {
   return (
@@ -29,12 +31,20 @@ function App() {
           element={<ScreeningSeatingPage />}
         />
         <Route
-          path="/:city/booking_detials/:id"
+          path="/:city/booking_details/:id"
           element={<BookingDetailPage />}
         />
         <Route
           path="/:city/booking_confirmation/:id"
           element={<BookingConfirmedPage />}
+        />
+        <Route
+          path="/my_bookings"
+          element={< MyBookingsPage/>}
+        />
+        <Route
+          path="/user_profile"
+          element={< UserProfilePage/>}
         />
       </Routes>
     </BrowserRouter>

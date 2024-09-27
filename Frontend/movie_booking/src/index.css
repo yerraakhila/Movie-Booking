@@ -234,11 +234,16 @@
 }
 
 .regular {
-  background-color: lightgray;
+  background-color: white;
 }
 
 .booked {
-  background-color: red;
+  background-color: rgb(163, 160, 160);
+  color: white;
+}
+
+.selected{
+  background-color: green;
   color: white;
 }
 .booking-detail-background {
@@ -250,8 +255,75 @@
   gap: 50px;
 }
 .booking-details {
+  display: flex;
+  justify-content: space-between;
   border: 2px solid black;
-  min-height: 60vh;
-  min-width: 50vw;
+  min-height: 70vh;
+  min-width: 70vw;
+  padding: 60px;
+}
+.payment-box{
+  border: 1px solid black;
+  width:50%;
   padding: 40px;
+
+}
+.pay-parallel{
+  display: flex;
+  justify-content: space-between;
+}
+.booking-confirmation-background{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+}
+.booking-confirmed-details{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 70vh;
+  min-width: 70vw;
+  padding: 60px;
+  border: 2px solid black;
+}
+.my-bookings-background{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+}
+.my-bookings-details{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 70vh;
+  min-width: 70vw;
+  padding: 60px;
+  border: 2px solid black;
+}
+.user-profile-background{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+}
+.user-profile-details{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 70vh;
+  min-width: 70vw;
+  padding: 60px;
+  border: 2px solid black;
+}
+.user-sub-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
 }

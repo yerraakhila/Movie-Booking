@@ -48,17 +48,6 @@ class Screening(models.Model):
         ]
 
 
-# Seat Model
-class Seat(models.Model):
-    id = models.AutoField(primary_key=True)
-    row = models.CharField(max_length=1)
-    number = models.PositiveIntegerField()
-    is_premium = models.BooleanField(default=False)
-    is_booked = models.BooleanField(default=False)
-    cost = models.PositiveIntegerField()
-    screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
-
-
 # User Model
 class UserManager(BaseUserManager):
     def create_user(self, username, password, name, email, **extra_fields):
@@ -103,5 +92,17 @@ class Booking(models.Model):
     booking_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
-    seats = models.ManyToManyField(Seat)
     status = models.CharField(max_length=20, choices=BookingStatus.choices)
+
+
+# Seat Model
+class Seat(models.Model):
+    id = models.AutoField(primary_key=True)
+    row = models.CharField(max_length=1)
+    number = models.PositiveIntegerField()
+    is_premium = models.BooleanField(default=False)
+    cost = models.PositiveIntegerField()
+    screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
+    booking = models.ForeignKey(
+        Booking, on_delete=models.CASCADE, related_name="seats", null=True, blank=True
+    )

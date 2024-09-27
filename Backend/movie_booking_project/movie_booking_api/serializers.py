@@ -40,10 +40,23 @@ class TheatreSerializer(serializers.ModelSerializer):
 
 
 class SeatSerializer(serializers.ModelSerializer):
+    is_available = serializers.SerializerMethodField()
 
     class Meta:
         model = Seat
-        fields = "__all__"  # Or specify the fields you want to include
+        fields = [
+            "id",
+            "row",
+            "number",
+            "is_premium",
+            "cost",
+            "screening",
+            "booking",
+            "is_available",
+        ]  # Or specify the fields you want to include
+
+    def get_is_available(self, obj):
+        return obj.booking is None
 
 
 # Booking Serializer
@@ -51,33 +64,38 @@ class BookingSerializer(serializers.ModelSerializer):
     # user = serializers.StringRelatedField()
     # screening = ScreeningSerializer()
     # seats = serializers.PrimaryKeyRelatedField(many=True, queryset=Seat.objects.all())
-    seat_objects = serializers.SerializerMethodField()
 
+    # seat_objects = serializers.SerializerMethodField()
+    seats = SeatSerializer(many=True,read_only=True)
+    screening_object = serializers.SerializerMethodField()
+    
     class Meta:
         model = Booking
-        fields = ["booking_id", "screening", "seats", "status", "seat_objects"]
+        fields = ["booking_id", "screening", "status", "seats","screening_object"]
 
-    def get_seat_objects(self, obj):
-        seat_objects = Seat.objects.filter(
-            id__in=obj.seats.values_list("id", flat=True)
-        )  # Get all seat objects related to the booking
-        return SeatSerializer(seat_objects, many=True).data
-
+    # def get_seat_objects(self, obj):
+    #     seat_objects = Seat.objects.filter(
+    #         id__in=obj.seats.values_list("id", flat=True)
+    #     )  # Get all seat objects related to the booking
+    #     return SeatSerializer(seat_objects, many=True).data
+    
+    def get_screening_object(self,obj):
+        screening_object = Screening.objects.get(id=obj.screening.id)
+        return ScreeningSerializer(screening_object).data
+            
     def create(self, validated_data):
         user = self.context["user"]
-        seats = validated_data.pop("seats")
         booking = Booking.objects.create(user=user, **validated_data)
-        booking.seats.set(seats)  # Set the seats for the booking
         return booking
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    bookings = BookingSerializer(many=True, read_only=True)
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["id", "username", "name", "email", "password"]
+        fields = ["id", "username", "name", "email", "password","bookings"]
 
     def create(self, validated_data):
         return User.objects.create_user(

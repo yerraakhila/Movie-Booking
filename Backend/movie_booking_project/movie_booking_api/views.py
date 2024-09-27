@@ -3,6 +3,7 @@ from django.utils import timezone
 from venv import logger
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework import status
 from .models import Booking, Movie, Theatre, Screening, Seat, User
@@ -242,45 +243,51 @@ class ScreeningSeatsView(APIView):
             )
 
 
-# class SelectSeatsView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         request.data["status"] = Booking.BookingStatus.PENDING
-#         serialized = BookingSerializer(
-#             data=request.data, context={"user": request.user}
-#         )
-#         if serialized.is_valid():
-#             serialized.save()
-#             return Response(serialized.data, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# select seats and click confirm
 class SelectSeatsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print(request.data)
-        data = request.data  # Safely copy the request data
-        data["status"] = Booking.BookingStatus.PENDING
-
-        serialized = BookingSerializer(data=data, context={"user": request.user})
-
+        request.data["status"] = Booking.BookingStatus.PENDING
+        seats = request.data.pop("seats")
+        serialized = BookingSerializer(
+            data=request.data, context={"user": request.user}
+        )
         if serialized.is_valid():
-            try:
-                serialized.save()
-                return Response(serialized.data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                # Log the exception and return a 500 response
-                logger.error(f"Error saving booking: {str(e)}")
-                return Response(
-                    {"detail": "An error occurred while saving the booking."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+            booking = serialized.save()
+
+            seat_ids = [seat.get("id") for seat in seats]
+
+            Seat.objects.filter(id__in=seat_ids).update(booking=booking)
+
+            return Response(serialized.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# select seats and click confirm
+# class SelectSeatsView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         print(request.data)
+#         data = request.data  # Safely copy the request data
+#         data["status"] = Booking.BookingStatus.PENDING
+
+#         serialized = BookingSerializer(data=data, context={"user": request.user})
+
+#         if serialized.is_valid():
+#             try:
+#                 serialized.save()
+#                 return Response(serialized.data, status=status.HTTP_201_CREATED)
+#             except Exception as e:
+#                 # Log the exception and return a 500 response
+#                 logger.error(f"Error saving booking: {str(e)}")
+#                 return Response(
+#                     {"detail": "An error occurred while saving the booking."},
+#                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                 )
+#         else:
+#             return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class BookingDetailInfoView(APIView):
@@ -303,7 +310,7 @@ class SelectSeatsView(APIView):
 class BookingDetailInfoView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, booking_id):
+    def get(self, request, city, booking_id):
         try:
             booking = Booking.objects.get(booking_id=booking_id, user=request.user)
             serialized = BookingSerializer(booking)
@@ -386,7 +393,7 @@ class BookingPayView(APIView):
 class BookingConfirmedDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, booking_id):
+    def get(self, request, city, booking_id):
         try:
             booking = Booking.objects.get(
                 booking_id=booking_id,
@@ -423,17 +430,43 @@ class MyBookingsView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
 
     def get(self, request):
-        bookings = Booking.objects.filter(
-            user=request.user, status=Booking.BookingStatus.CONFIRMED
-        )
+        try:
+            user = request.user
 
-        if bookings.exists():  # Check if there are any bookings
+            # Check if the user has bookings
+            bookings = (
+                user.bookings.all()
+            )  # Ensure this returns a queryset, e.g., .all() for related managers
+            if not bookings.exists():
+                raise NotFound("No bookings found for this user.")
+
+            # Serialize the bookings
             serialized = BookingSerializer(bookings, many=True)
             return Response(serialized.data, status=status.HTTP_200_OK)
-        else:
+
+        except NotFound as e:
+            # Handle cases where no bookings are found
+            return Response({"detail": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            # Catch all other exceptions and log or return an appropriate response
             return Response(
-                {"message": "No bookings found."}, status=status.HTTP_404_NOT_FOUND
+                {"error": "Something went wrong", "detail": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+    # def get(self, request):
+    #     bookings = Booking.objects.filter(
+    #         user=request.user, status=Booking.BookingStatus.CONFIRMED
+    #     )
+
+    #     if bookings.exists():  # Check if there are any bookings
+    #         serialized = BookingSerializer(bookings, many=True)
+    #         return Response(serialized.data, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response(
+    #             {"message": "No bookings found."}, status=status.HTTP_404_NOT_FOUND
+    #         )
 
 
 class UserProfileView(APIView):
@@ -443,6 +476,34 @@ class UserProfileView(APIView):
         user = request.user
         serialized = UserSerializer(user)
         return Response(serialized.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = request.user
+        data = request.data
+
+        # Define allowed fields
+        allowed_fields = {"name", "email", "password"}
+
+        if set(data.keys()).issubset(allowed_fields):
+            for field, value in data.items():
+                # Hash the password
+                if field == "password":
+                    user.set_password(value)
+                else:
+                    setattr(user, field, value)
+
+            user.save()
+            refresh = RefreshToken.for_user(user)
+            return Response(
+                {"refresh": str(refresh), "access": str(refresh.access_token)},
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response({"error": "Invalid fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        user = request.user
+        return
 
 
 class SignupView(APIView):
@@ -470,11 +531,13 @@ class SigninView(APIView):
             )
         return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # class SingleScreeningInfo(APIView):
 #     def get(self,request,screening_id):
 #         screening = Screening.objects.get(id=screening_id)
 #         serialized = ScreeningSerializer(screening)
 #         return Response(serialized.data, status=status.HTTP_200_OK)
+
 
 # get single screening
 class SingleScreeningInfoView(APIView):
@@ -482,4 +545,4 @@ class SingleScreeningInfoView(APIView):
         # Use get_object_or_404 for better error handling
         screening = get_object_or_404(Screening, id=screening_id)
         serialized = ScreeningSerializer(screening)
-        return Response(serialized.data, status=status.HTTP_200_OK)     
+        return Response(serialized.data, status=status.HTTP_200_OK)
