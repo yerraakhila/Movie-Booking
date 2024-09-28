@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { getToken } from "../helper/user";
+import { getToken, clearUser } from "../helper/user";
 import { useNavigate, Link } from "react-router-dom";
 import Modal from "./DeleteAccountModal"; // Import the Modal component
 
@@ -72,24 +72,19 @@ function ProfileView() {
   };
 
   const handleDeleteAccount = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      axios
-        .delete("http://127.0.0.1:8000/api/user-profile/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then(() => {
-          console.log("Account deleted successfully!");
-          setModalOpen(false); // Close modal after deletion
-          navigate("/"); // Navigate to the home page or login page
-        })
-        .catch((error) => console.log(error));
-    }
+    axios
+      .delete("http://127.0.0.1:8000/api/user-profile/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        console.log("Account deleted successfully!");
+        setModalOpen(false);
+        clearUser();
+        navigate("/");
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -127,8 +122,13 @@ function ProfileView() {
             <Modal
               isOpen={isModalOpen}
               onClose={() => setModalOpen(false)}
-              onDelete={handleDeleteAccount}
-            />
+              onDelete={handleDeleteAccount} // Call delete when user confirms
+            >
+              <p>
+                Are you sure you want to delete your account? This action cannot
+                be undone.
+              </p>
+            </Modal>
           </div>
         ) : (
           <Formik

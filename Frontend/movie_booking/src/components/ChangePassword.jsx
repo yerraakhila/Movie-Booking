@@ -1,27 +1,27 @@
-// ChangePassword.js
-import React, { useState } from "react";
+import React from "react";
 import axios from "axios";
-import { getToken } from "../helper/user";
+import { getToken, clearUser } from "../helper/user";
 import { useNavigate } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 function ChangePassword() {
   const navigate = useNavigate();
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const token = getToken();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
+  // Password validation schema
+  const validationSchema = Yup.object({
+    newPassword: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("New password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+      .required("Please confirm your password"),
+  });
 
-    if (newPassword !== confirmPassword) {
-      setError("New password and confirm password do not match.");
-      return;
-    }
-
+  const handleSubmit = (values, { setSubmitting, setErrors }) => {
     const data = {
-      password: newPassword,
+      password: values.newPassword,
     };
 
     axios
@@ -33,43 +33,67 @@ function ChangePassword() {
       })
       .then((response) => {
         console.log("Password changed successfully!", response.data);
-        navigate("/"); // Navigate to the desired page after success
+        clearUser();
+        navigate("/signin");
       })
       .catch((error) => {
         console.log(error);
-        setError("Failed to change password. Please try again.");
-      });
+        setErrors({ apiError: "Failed to change password. Please try again." });
+      })
+      .finally(() => setSubmitting(false));
   };
 
   return (
     <div className="container">
       <h2>Change Password</h2>
-      {error && <div className="text-danger">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>New Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm New Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Change Password
-        </button>
-      </form>
+      <Formik
+        initialValues={{ newPassword: "", confirmPassword: "" }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting, errors }) => (
+          <Form>
+            {errors.apiError && (
+              <div className="text-danger">{errors.apiError}</div>
+            )}
+            <div className="form-group">
+              <label>New Password</label>
+              <Field
+                type="password"
+                name="newPassword"
+                className="form-control"
+              />
+              <ErrorMessage
+                name="newPassword"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Confirm New Password</label>
+              <Field
+                type="password"
+                name="confirmPassword"
+                className="form-control"
+              />
+              <ErrorMessage
+                name="confirmPassword"
+                component="div"
+                className="text-danger"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isSubmitting}
+            >
+              Change Password
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }

@@ -112,7 +112,7 @@ function Navbar() {
         </div> */}
         <div className="icon profile">
           <button
-            class=""
+            className=""
             type="button"
             data-toggle="dropdown"
             aria-expanded="false"
@@ -130,36 +130,36 @@ function Navbar() {
               <CgProfile size={30} />
             )}
           </button>
-          {/* {!loginStatus ? (
-            <div class="dropdown-menu">
-              <Link class="dropdown-item" to="/signin">
+          {!loginStatus ? (
+            <div className="dropdown-menu">
+              <Link className="dropdown-item" to="/signin">
                 Login
               </Link>
-              <Link class="dropdown-item" to="/signup">
+              <Link className="dropdown-item" to="/signup">
                 Sign Up
               </Link>
             </div>
           ) : (
-            <div class="dropdown-menu">
-              <Link class="dropdown-item" onClick={handleLogout} to="/">
+            <div className="dropdown-menu">
+              <Link className="dropdown-item" onClick={handleLogout} to="/">
                 Logout
               </Link>
-              <Link class="dropdown-item" to="/my_bookings">
-              My bookings
+              <Link className="dropdown-item" to="/my_bookings">
+                My bookings
               </Link>
-              <Link class="dropdown-item" to="/user_profile">
+              <Link className="dropdown-item" to="/user_profile">
                 User Profile
               </Link>
             </div>
-          )} */}
-          <div class="dropdown-menu">
-            <Link class="dropdown-item" onClick={handleLogout} to="/">
+          )}
+          <div className="dropdown-menu">
+            <Link className="dropdown-item" onClick={handleLogout} to="/">
               Logout
             </Link>
-            <Link class="dropdown-item" to="/my_bookings">
+            <Link className="dropdown-item" to="/my_bookings">
               My bookings
             </Link>
-            <Link class="dropdown-item" to="/user_profile">
+            <Link className="dropdown-item" to="/user_profile">
               User Profile
             </Link>
           </div>

@@ -18,7 +18,7 @@ function SignUp() {
   });
   function onSubmit(values) {
     axios
-      .post("https://fakestoreapi.com/users", values)
+      .post("http://127.0.0.1:8000/api/signup/", values)
       .then(
         (response) => {
           setResponseRequest({
@@ -40,7 +40,6 @@ function SignUp() {
     name: Yup.string().required("enter name"),
     username: Yup.string().required("enter username"),
     email: Yup.string().required("enter email").email("enter valid email"),
-    mobile: Yup.string().required("enter mobile number").matches(/^[0-9]{10}$/, "Mobile number must be exactly 10 digits"),
     password: Yup.string()
       .required("enter password")
       .min(6, "password must be minimum of 6 characters"),
@@ -52,7 +51,7 @@ function SignUp() {
           <div className="one-fourth"></div>
           <div className="half">
             <div style={{ padding: "25px" }} className="wrapper">
-              <div class={responseRequest.alertClass} role="alert">
+              <div className={responseRequest.alertClass} role="alert">
                 {responseRequest.textMessage}
               </div>
               <h5>WELCOME TO</h5>
@@ -115,22 +114,6 @@ function SignUp() {
                         />
                         <small className="text-danger">
                           <ErrorMessage name="email" />
-                        </small>
-                      </div>
-                      <div className="form-group">
-                        <label style={{ fontWeight: "600" }}>Mobile</label>
-                        <Field
-                          name="mobile"
-                          className={
-                            formik.touched.mobile && formik.errors.mobile
-                              ? "form-control is-invalid"
-                              : "form-control"
-                          }
-                          type="number"
-                          style={{ backgroundColor: "#f2f6f7" }}
-                        />
-                        <small className="text-danger">
-                          <ErrorMessage name="mobile" />
                         </small>
                       </div>
                       <div className="form-group">

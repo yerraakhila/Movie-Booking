@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from .models import Movie, Theatre, Screening, Seat, Booking, User
+from rest_framework.exceptions import ValidationError
 
 
 class ScreeningSerializer(serializers.ModelSerializer):
@@ -66,23 +67,23 @@ class BookingSerializer(serializers.ModelSerializer):
     # seats = serializers.PrimaryKeyRelatedField(many=True, queryset=Seat.objects.all())
 
     # seat_objects = serializers.SerializerMethodField()
-    seats = SeatSerializer(many=True,read_only=True)
+    seats = SeatSerializer(many=True, read_only=True)
     screening_object = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Booking
-        fields = ["booking_id", "screening", "status", "seats","screening_object"]
+        fields = ["booking_id", "screening", "status", "seats", "screening_object"]
 
     # def get_seat_objects(self, obj):
     #     seat_objects = Seat.objects.filter(
     #         id__in=obj.seats.values_list("id", flat=True)
     #     )  # Get all seat objects related to the booking
     #     return SeatSerializer(seat_objects, many=True).data
-    
-    def get_screening_object(self,obj):
+
+    def get_screening_object(self, obj):
         screening_object = Screening.objects.get(id=obj.screening.id)
         return ScreeningSerializer(screening_object).data
-            
+
     def create(self, validated_data):
         user = self.context["user"]
         booking = Booking.objects.create(user=user, **validated_data)
@@ -95,7 +96,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "name", "email", "password","bookings"]
+        fields = ["id", "username", "name", "email", "password", "bookings"]
 
     def create(self, validated_data):
         return User.objects.create_user(
@@ -114,4 +115,4 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(username=data["username"], password=data["password"])
         if user and user.is_active:
             return user
-        raise serializers.validationError("invalid credentials")
+        raise ValidationError("invalid credentials")

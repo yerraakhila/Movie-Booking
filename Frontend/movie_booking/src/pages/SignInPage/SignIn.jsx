@@ -17,21 +17,22 @@ function SignIn() {
   };
   function onSubmit(values) {
     axios
-      .post("http://127.0.0.1:8000/api/signup/", values)
+      .post("http://127.0.0.1:8000/api/signin/", values)
       .then(
         (response) => {
-          setRequestResponse({
-            textMessage: "Login is successful",
-            alertClass: "alert alert-success",
-          });
-          saveUser(values.username, response.data.token);
+          saveUser(values.username, response.data.access);
           navigate("/");
         },
         (error) => {
-          setRequestResponse({
-            textMessage: error.response.data,
-            alertClass: "alert alert-danger",
-          });
+          if (error.response && error.response.data) {
+            const errorMessage = error.response.data.non_field_errors
+              ? error.response.data.non_field_errors[0]
+              : "An error occurred. Please try again.";
+            setRequestResponse({
+              textMessage: errorMessage,
+              alertClass: "alert alert-danger",
+            });
+          }
         }
       )
       .catch((error) => console.log(error));
@@ -49,11 +50,9 @@ function SignIn() {
           <div className="one-fourth"></div>
           <div className="half">
             <div className="wrapper">
-              <div class={requestResponse.alertClass} role="alert">
+              <div className={requestResponse.alertClass} role="alert">
                 {requestResponse.textMessage}
               </div>
-              <h5>HELLO</h5>
-              <h2>WELCOME BACK</h2>
               <br></br>
               {/* <h2>Login</h2>
               <hr style={{ marginBottom: "30px" }} /> */}
