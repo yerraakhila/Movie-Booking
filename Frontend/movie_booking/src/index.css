@@ -99,7 +99,8 @@
   display: flex;
   justify-content: center;
   border: 1px solid black;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 25px;
   flex-direction: column;
 }
 .poster-trailer {
@@ -242,7 +243,7 @@
   color: white;
 }
 
-.selected{
+.selected {
   background-color: green;
   color: white;
 }
@@ -262,23 +263,22 @@
   min-width: 70vw;
   padding: 60px;
 }
-.payment-box{
+.payment-box {
   border: 1px solid black;
-  width:50%;
+  width: 50%;
   padding: 40px;
-
 }
-.pay-parallel{
+.pay-parallel {
   display: flex;
   justify-content: space-between;
 }
-.booking-confirmation-background{
+.booking-confirmation-background {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 90vh;
 }
-.booking-confirmed-details{
+.booking-confirmed-details {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -288,13 +288,30 @@
   padding: 60px;
   border: 2px solid black;
 }
-.my-bookings-background{
+.my-bookings-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+}
+.my-bookings-details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 70%;
+  min-width: 70%;
+  padding: 60px;
+  border: 2px solid black;
+  margin: 40px;
+}
+.user-profile-background {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 90vh;
 }
-.my-bookings-details{
+.user-profile-details {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -304,26 +321,161 @@
   padding: 60px;
   border: 2px solid black;
 }
-.user-profile-background{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 90vh;
-}
-.user-profile-details{
+.user-sub-div {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  min-height: 70vh;
-  min-width: 70vw;
-  padding: 60px;
-  border: 2px solid black;
 }
-.user-sub-div{
+.search-bar {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+}
+.search-bar input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+.search-filter {
+  display: flex;
 
+  align-items: center;
+
+  padding: 30px;
+}
+.language {
+  max-width: 500px;
+  display: flex;
+  gap: 10px;
+}
+.genre {
+  max-width: 500px;
+  width: 33.33%;
+  display: flex;
+  gap: 10px;
+}
+.book-tickets {
+  background-color: green;
+  color: white;
+  padding: 10px 15px;
+  font-size: 20px;
+  border: none;
+  border-radius: 4px;
+}
+
+.search-results-dropdown {
+  position: absolute; /* Make sure it's positioned correctly */
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%; /* Same width as input */
+  z-index: 1000; /* Make sure it's above other elements */
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background-color: #f0f0f0;
+}
+
+.no-results-message {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1000;
+  width: 100%;
+}
+
+.icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.profile {
+  display: flex;
+}
+.circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  text-align: center;
+  background-color: #007bff;
+  padding: 7px 13px;
+  color: white;
+  font-size: 20px;
+}
+
+.delete-account-button {
+  background-color: #ff4d4d; /* Red background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.delete-account-button:hover {
+  background-color: #ff1a1a; /* Darker red on hover */
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure modal is on top */
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #999;
 }

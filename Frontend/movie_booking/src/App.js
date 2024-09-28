@@ -12,6 +12,7 @@ import BookingConfirmedPage from "./pages/BookingConfirmedPage/BookingConfirmedP
 import LandingPage from "./pages/LandingPage/LandingPage.jsx";
 import MyBookingsPage from "./pages/MyBookingsPage/MyBookingsPage.jsx";
 import UserProfilePage from "./pages/UserProfilePage/UserProfilePage.jsx";
+import ChangePasswordPage from "./pages/UserProfilePage/ChangePasswordPage.jsx";
 
 function App() {
   return (
@@ -38,14 +39,9 @@ function App() {
           path="/:city/booking_confirmation/:id"
           element={<BookingConfirmedPage />}
         />
-        <Route
-          path="/my_bookings"
-          element={< MyBookingsPage/>}
-        />
-        <Route
-          path="/user_profile"
-          element={< UserProfilePage/>}
-        />
+        <Route path="/my_bookings" element={<MyBookingsPage />} />
+        <Route path="/user_profile" element={<UserProfilePage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
       </Routes>
     </BrowserRouter>
   );

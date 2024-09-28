@@ -54,7 +54,7 @@ function MovieDetail() {
           <h5 className="duration">duration: {movie.running_time} min</h5>
         </div>
         <div className="book-tickets-div">
-          <button onClick={handleClick}>Book Tickets</button>
+          <button className="book-tickets" onClick={handleClick}>Book Tickets</button>
         </div>
       </div>
     </div>

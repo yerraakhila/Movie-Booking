@@ -2,6 +2,7 @@ from datetime import datetime
 from django.utils import timezone
 from venv import logger
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
@@ -62,7 +63,8 @@ class MoviesListByCityView(APIView):
 class MovieSearchView(APIView):
     def get(self, request):
         search_text = request.query_params.get("query", "")
-        movies = Movie.objects.filter(title__icontains=search_text).all()
+        # Return only 5 movies at max to frontend.
+        movies = Movie.objects.filter(title__icontains=search_text)[:5]
         serialized = MovieSerializer(movies, many=True)
         return Response(serialized.data, status=status.HTTP_200_OK)
 
@@ -440,10 +442,13 @@ class UserProfileView(APIView):
         user = request.user
         data = request.data
 
-        # Define allowed fields
-        allowed_fields = {"name", "email", "password"}
+        allowed_fields = {"name","username", "email", "password"}
 
         if set(data.keys()).issubset(allowed_fields):
+            if 'username' in data and data['username'] != user.username:
+                # Check if the username already exists
+                if User.objects.filter(username=data['username']).exists():
+                    raise ValidationError({"username": "This username is already taken."})
             for field, value in data.items():
                 # Hash the password
                 if field == "password":

@@ -1,17 +1,16 @@
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CiStar } from "react-icons/ci";
 
-
 function EachMovie(props) {
-  const { city } = useParams()
+  const { city } = useParams();
   let navigate = useNavigate();
   const { poster_url, rating, title, id, genre, running_time } = props.data;
   function handleClick(e) {
     e.preventDefault();
-    navigate("/"+city+"/movie/" + id);
+    navigate("/" + city + "/movie/" + id);
   }
   return (
-    <div class="five-items">
+    <div className="five-items">
       <div className="card-replace">
         <img src={poster_url} width={250} height={360} onClick={handleClick} />
         <div className="black">
