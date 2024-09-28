@@ -24,7 +24,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class MoviesListByCityView(APIView):
     def get(self, request, city):
         try:
-            # Get screenings in the city
+            language = request.query_params.get("language")
+            genre = request.query_params.get("genre")
+
             screenings = Screening.objects.filter(city=city)
             if not screenings.exists():
                 return Response(
@@ -37,18 +39,10 @@ class MoviesListByCityView(APIView):
 
             # Get movies based on those IDs
             movies = Movie.objects.filter(id__in=movie_ids)
-            if "language" in request.query_params:
-                movies = movies.filter(languages=request.query_params.get("language"))
-            if "genre" in request.query_params:
-                movies = movies.filter(
-                    genre__contains=request.query_params.get("genre")
-                )
-
-            if not movies.exists():
-                return Response(
-                    {"error": "No movies found for this city."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            if language:
+                movies = movies.filter(languages=language)
+            if genre:
+                movies = movies.filter(genre__contains=genre)
 
             # Serialize and return movie data
             serialized = MovieSerializer(movies, many=True)
@@ -198,15 +192,29 @@ class SelectSeatsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        request.data["status"] = Booking.BookingStatus.PENDING
         seats = request.data.pop("seats")
+        seat_ids = [seat.get("id") for seat in seats]
+
+        if len(seat_ids) > 10:
+            return Response(
+                {"detail": "You cannot select more than 10 tickets."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        booked_seats = Seat.objects.filter(id__in=seat_ids, booking__isnull=False)
+
+        if booked_seats.exists():
+            return Response(
+                {"detail": "Some of the selected seats are already booked."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        request.data["status"] = Booking.BookingStatus.PENDING
         serialized = BookingSerializer(
             data=request.data, context={"user": request.user}
         )
         if serialized.is_valid():
             booking = serialized.save()
-
-            seat_ids = [seat.get("id") for seat in seats]
 
             Seat.objects.filter(id__in=seat_ids).update(booking=booking)
 
@@ -454,7 +462,11 @@ class UserProfileView(APIView):
 
     def delete(self, request):
         user = request.user
-        return
+        user.delete()  # Delete the user instance from the database
+        return Response(
+            {"message": "Account deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class SignupView(APIView):

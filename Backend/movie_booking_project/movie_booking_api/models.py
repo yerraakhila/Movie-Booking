@@ -93,6 +93,8 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=BookingStatus.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 # Seat Model
