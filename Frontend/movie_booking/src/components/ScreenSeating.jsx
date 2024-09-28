@@ -1,38 +1,80 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getToken } from "../helper/user";
 
 function ScreenSeating() {
   const [seats, setSeats] = useState([]);
   const { id, city } = useParams();
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/" + city + "/screening-seats/" + id + "/")
-      .then((Response) => setSeats(Response.data))
-      .catch((error) => console.log(error));
-  }, [id, city]);
-
   const [screening, setScreening] = useState({});
+  const [newlyBookedSeats, setNewlyBookedSeats] = useState([]);
+  const navigate = useNavigate();
+
+  // Fetch seats
   useEffect(() => {
     axios
-      .get(
-        "http://127.0.0.1:8000/api/" + city + "/single-screening/" + id + "/"
-      )
-      .then((Response) => setScreening(Response.data))
+      .get(`http://127.0.0.1:8000/api/${city}/screening-seats/${id}/`)
+      .then((response) => setSeats(response.data))
       .catch((error) => console.log(error));
   }, [id, city]);
 
-  const navigate = useNavigate();
+  // Fetch screening details
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/api/${city}/single-screening/${id}/`)
+      .then((response) => setScreening(response.data))
+      .catch((error) => console.log(error));
+  }, [id, city]);
+
+  // Handle seat click
+  function handleSeatClick(seat) {
+    if (seat.is_available) {
+      setNewlyBookedSeats((prevSeats) => {
+        const seatIndex = prevSeats.findIndex((s) => s.id === seat.id);
+        if (seatIndex !== -1) {
+          // Remove seat if already selected
+          return prevSeats.filter((s) => s.id !== seat.id);
+        } else {
+          // Add seat if not selected
+          return [...prevSeats, seat];
+        }
+      });
+    }
+  }
+
+  // Get seat class for styling
+  function getSeatClassName(seat) {
+    return `seat ${seat.is_premium ? "premium" : "regular"} ${
+      newlyBookedSeats.some((s) => s.id === seat.id) ? "selected" : ""
+    } ${seat.is_available ? "" : "booked"}`;
+  }
+
+  // Extract and format time from date string
+  function extractTime(dateTimeString) {
+    const date = new Date(dateTimeString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amPm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    return `${hours}:${formattedMinutes}${amPm}`;
+  }
+
+  // Handle continue button click
   function handleClick(e) {
     e.preventDefault();
+
+    // Check if any seats have been selected
+    if (newlyBookedSeats.length === 0) {
+      alert("Please select at least one seat before proceeding.");
+      return;
+    }
+
     const seats_dict = {
       seats: newlyBookedSeats,
       screening: id,
     };
-    console.log(seats_dict)
+
     const token = getToken();
 
     axios
@@ -44,46 +86,12 @@ function ScreenSeating() {
       })
       .then((response) => {
         const data = response.data;
-
         const booking_id = data.booking_id;
-        console.log(response);
-        navigate("/" + city + "/booking_details/" + booking_id);
+        navigate(`/${city}/booking_details/${booking_id}`);
       })
       .catch((error) => console.log(error));
   }
 
-  function extractTime(dateTimeString) {
-    const date = new Date(dateTimeString);
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amPm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    return `${hours}:${formattedMinutes}${amPm}`;
-  }
-
-  const [newlyBookedSeats, setNewlyBookedSeats] = useState([]); // Manage booked seats state
-    function handleSeatClick(seat) {
-      if (seat.is_available) {
-        setNewlyBookedSeats((prevSeats) => {
-          const seatIndex = prevSeats.findIndex((s) => s.id === seat.id);
-          if (seatIndex !== -1) {
-            // Seat is already booked, remove it
-            return prevSeats.filter((s) => s.id !== seat.id);
-          } else {
-            // Seat is not booked, add it
-            return [...prevSeats, seat];
-          }
-        });
-      }
-    }
-
-
-  function getSeatClassName(seat) {
-    return `seat ${seat.is_premium ? "premium" : "regular"} ${
-      newlyBookedSeats.some((s) => s.id === seat.id) ? "selected" : ""
-    } ${seat.is_available ? "" : "booked"}`;
-  }
   return (
     <div className="seating-background">
       <div className="seating-info">
@@ -120,12 +128,18 @@ function ScreenSeating() {
         </div>
 
         <div>
-          <button className="continue" onClick={handleClick}>
-            continue
+          {/* Disable the button if no seats are selected */}
+          <button
+            className="continue"
+            onClick={handleClick}
+            disabled={newlyBookedSeats.length === 0}
+          >
+            Continue
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 export default ScreenSeating;
