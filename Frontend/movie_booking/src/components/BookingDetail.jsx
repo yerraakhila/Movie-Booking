@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../helper/user";
 import { formatDateTime } from "../helper/dateHelper";
@@ -9,7 +8,9 @@ import { formatDateTime } from "../helper/dateHelper";
 function BookingDetail() {
   const { id, city } = useParams();
   const [booking, setBooking] = useState({});
+  const [timeLeft, setTimeLeft] = useState(60);
   const token = getToken();
+
   useEffect(() => {
     axios
       .get(
@@ -21,34 +22,66 @@ function BookingDetail() {
           },
         }
       )
-      .then((Response) => setBooking(Response.data))
-      .catch((error) => console.log(error));
-  }, [id]);
+      .then((Response) => {
+        setBooking(Response.data);
 
-  const navigate = useNavigate();
-  function handleClick(e) {
-    e.preventDefault();
-    console.log("akhila");
-    const token = getToken();
-    axios
-      .put(
-        "http://127.0.0.1:8000/api/booking-pay/" + id + "/",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        const data = response.data;
-        const booking_id = data.booking_id;
-        console.log(response);
-        navigate("/" + city + "/booking_confirmation/" + booking_id);
+        // Get the createdAt time from the backend response
+        const createdAt = new Date(Response.data.created_at);
+        const currentTime = new Date();
+
+        // Calculate the time difference in seconds
+        const timeElapsed = Math.floor((currentTime - createdAt) / 1000);
+        const remainingTime = Math.max(60 - timeElapsed, 0); // 180 seconds minus elapsed time
+
+        setTimeLeft(remainingTime);
       })
       .catch((error) => console.log(error));
+  }, [id, city, token]);
+
+  const navigate = useNavigate();
+
+  function handleClick(e) {
+    e.preventDefault();
+    if (timeLeft > 0) {
+      axios
+        .put(
+          "http://127.0.0.1:8000/api/booking-pay/" + id + "/",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          const data = response.data;
+          const booking_id = data.booking_id;
+          navigate("/" + city + "/booking_confirmation/" + booking_id);
+        })
+        .catch((error) => console.log(error));
+    }
   }
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft === 0) return;
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft]);
+
+  // Format time as mm:ss
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   let premium = 0;
   let regular = 0;
@@ -104,6 +137,7 @@ function BookingDetail() {
             <p>Loading booking details...</p>
           )}
         </div>
+
         <div className="payment-box">
           <h3 className="order-summary">Order Summary:</h3>
           <br></br>
@@ -155,6 +189,7 @@ function BookingDetail() {
             ) : (
               <p>Loading booking details...</p>
             )}
+
             <div className="pay-parallel">
               <div>GST fee (18%)</div>
               <div>₹{gst}</div>
@@ -178,11 +213,17 @@ function BookingDetail() {
       </div>
 
       <div>
-        <button className="pay-button" onClick={handleClick}>
-          Click here to Pay
+        <h6>Time left to pay: {formatTime(timeLeft)}</h6>
+        <button
+          className="pay-button"
+          onClick={handleClick}
+          disabled={timeLeft === 0}
+        >
+          {timeLeft > 0 ? "Click here to Pay" : "Time expired"}
         </button>
       </div>
     </div>
   );
 }
+
 export default BookingDetail;

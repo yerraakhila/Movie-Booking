@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from venv import logger
 from django.shortcuts import get_object_or_404
@@ -16,6 +16,7 @@ from .serializers import (
     LoginSerializer,
     BookingSerializer,
 )
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -124,9 +125,6 @@ class MovieScreeningsView(APIView):
                 f"Fetching screenings for Movie ID: {movie_id}, City: {city}, Date: {start_datetime, end_datetime}"
             )
 
-            # Get all screenings related to this movie
-            from django.db.models import Q
-
             movie_screenings = Screening.objects.filter(
                 Q(movie=movie)
                 & Q(city=city)
@@ -186,27 +184,44 @@ class SelectSeatsView(APIView):
         seats = request.data.pop("seats")
         seat_ids = [seat.get("id") for seat in seats]
 
+        # Ensure that no more than 10 tickets are selected
         if len(seat_ids) > 10:
             return Response(
                 {"detail": "You cannot select more than 10 tickets."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        booked_seats = Seat.objects.filter(id__in=seat_ids, booking__isnull=False)
+        minute_ago = timezone.now() - timedelta(minutes=1)
+
+        booked_seats = Seat.objects.filter(
+            id__in=seat_ids,
+            booking__isnull=False,
+        ).exclude(
+            booking__status=Booking.BookingStatus.PENDING,
+            booking__created_at__lte=minute_ago,
+        )
 
         if booked_seats.exists():
             return Response(
-                {"detail": "Some of the selected seats are already booked."},
+                {
+                    "detail": "Some of the selected seats are already booked or pending for less than a minute."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Update the status to Pending
         request.data["status"] = Booking.BookingStatus.PENDING
+
+        # Serialize the booking request
         serialized = BookingSerializer(
             data=request.data, context={"user": request.user}
         )
+
         if serialized.is_valid():
+            # Save the booking and update the seats with this booking
             booking = serialized.save()
 
+            # Associate the selected seats with this booking
             Seat.objects.filter(id__in=seat_ids).update(booking=booking)
 
             return Response(serialized.data, status=status.HTTP_201_CREATED)
@@ -293,7 +308,6 @@ class BookingConfirmedDetailView(APIView):
             )
 
 
-# my bookings
 class MyBookingsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -301,8 +315,11 @@ class MyBookingsView(APIView):
         try:
             user = request.user
 
-            bookings = user.bookings.all().order_by("-updated_at")
-            if not bookings.exists():
+            bookings = Booking.objects.filter(
+                user=user, status=Booking.BookingStatus.CONFIRMED
+            ).order_by("-updated_at")
+
+            if not bookings:
                 raise NotFound("No bookings found for this user.")
 
             serialized = BookingSerializer(bookings, many=True)

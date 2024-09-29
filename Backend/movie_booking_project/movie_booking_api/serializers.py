@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from .models import Movie, Theatre, Screening, Seat, Booking, User
 from rest_framework.exceptions import ValidationError
+from datetime import timedelta
+from django.utils import timezone
 
 
 class ScreeningSerializer(serializers.ModelSerializer):
@@ -54,10 +56,20 @@ class SeatSerializer(serializers.ModelSerializer):
             "screening",
             "booking",
             "is_available",
-        ]  # Or specify the fields you want to include
+        ]
 
     def get_is_available(self, obj):
-        return obj.booking is None
+        # Check if there's no booking
+        if obj.booking is None:
+            return True
+
+        if (
+            obj.booking.status == Booking.BookingStatus.PENDING
+            and timezone.now() - obj.booking.created_at > timedelta(minutes=1)
+        ):
+            return True
+
+        return False
 
 
 # Booking Serializer

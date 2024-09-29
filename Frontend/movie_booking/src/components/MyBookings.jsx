@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { getToken } from "../helper/user";
+import { getToken, getCity } from "../helper/user";
 import { calculateTotal } from "../helper/bookingHelper";
 import { formatDateTime } from "../helper/dateHelper";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,7 +23,8 @@ function MyBookings() {
   }, [token]);
 
   const handleNavigate = (bookingId) => {
-    navigate(`/booking/${bookingId}`);
+    const city = getCity();
+    navigate(`/${city}/booking_confirmation/${bookingId}`);
   };
 
   return (
@@ -39,7 +40,11 @@ function MyBookings() {
             <p>No bookings found.</p>
           ) : (
             bookings.map((booking) => (
-              <div key={booking.booking_id} className="booking-row">
+              <div
+                key={booking.booking_id}
+                className="booking-row"
+                onClick={() => handleNavigate(booking.booking_id)}
+              >
                 <div className="poster-title">
                   <img
                     src={booking.screening_object.movie_object.poster_url}
