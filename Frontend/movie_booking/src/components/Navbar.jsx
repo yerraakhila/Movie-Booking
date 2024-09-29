@@ -57,17 +57,21 @@ function Navbar() {
   };
 
   return (
-    <div className="navbar">
+    <div className="navbar" style={{
+      
+      padding: "15px 25px"
+    }}>
       <div className="logo-with-appname" onClick={() => navigate("/")}>
         <BiCameraMovie size={40} />
-        <span className="app-name">Book My Movie</span>
+        <span className="app-name">bookmymovie</span>
       </div>
-      <div className="search-container" style={{ position: "relative" }}>
+      <div className="search-container" style={{ position: "relative",width: "500px"}}>
         <input
           type="text"
           value={searchInput}
           onChange={handleSearchChange}
           placeholder="Search for movies..."
+          className="search-input"
         />
         {searchInput.length >= 3 && searchResults?.length === 0 && (
           <div className="no-results-message">No results found.</div>
@@ -93,7 +97,7 @@ function Navbar() {
       <div className="city-and-profile">
         <div className="city-selection">
           <label htmlFor="cities" className="select-city">
-            Select City:
+           
           </label>
           <select
             id="cities"
@@ -112,12 +116,11 @@ function Navbar() {
         </div> */}
         <div className="icon profile">
           <button
-            className=""
+            className="profile-button"
             type="button"
             data-toggle="dropdown"
             aria-expanded="false"
             style={{
-              backgroundColor: "rgb(249, 242, 235)",
               color: "black",
               border: "0px",
             }}
@@ -131,7 +134,7 @@ function Navbar() {
             )}
           </button>
           {!loginStatus ? (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu dropdown-menu-right">
               <Link className="dropdown-item" to="/signin">
                 Login
               </Link>
@@ -140,7 +143,7 @@ function Navbar() {
               </Link>
             </div>
           ) : (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu dropdown-menu-right">
               <Link className="dropdown-item" onClick={handleLogout} to="/">
                 Logout
               </Link>
@@ -152,18 +155,7 @@ function Navbar() {
               </Link>
             </div>
           )}
-          <div className="dropdown-menu">
-            <Link className="dropdown-item" onClick={handleLogout} to="/">
-              Logout
-            </Link>
-            <Link className="dropdown-item" to="/my_bookings">
-              My bookings
-            </Link>
-            <Link className="dropdown-item" to="/user_profile">
-              User Profile
-            </Link>
-          </div>
-          <p style={{ margin: "0px", fontWeight: "600" }}>Profile</p>
+          <p style={{ margin: "0px", fontWeight: "600"}}>Profile</p>
         </div>
       </div>
     </div>

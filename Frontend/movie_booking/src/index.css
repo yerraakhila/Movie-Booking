@@ -20,13 +20,15 @@
 .navbar {
   display: flex;
   height: 10vh;
-  background: pink;
+  background: rgb(255, 255, 255);
+  box-shadow: 0 4px 8px rgba(32, 35, 36, 0.1);
 }
 .logo-with-appname {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
+  color: #e71d1d;
 }
 .app-name {
   font-size: 25px;
@@ -35,7 +37,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: 60px;
 }
 .city-selection {
   font-size: 5px;
@@ -44,10 +46,12 @@
   font-size: 20px;
 }
 .options {
-  font-size: 20px;
-  padding: 5px;
+  font-size: 25px;
+  font-weight: 300;
+  padding: 5px 0px 5px 5px;
   border: none;
   border-radius: 3px;
+  color: #464545;
 }
 .profile-div {
   display: flex;
@@ -94,14 +98,15 @@
   height: 90vh;
   justify-content: center;
   align-items: center;
+  background-color: rgb(247, 239, 234);
 }
 .movie-detail {
   display: flex;
   justify-content: center;
-  border: 1px solid black;
   border-radius: 10px;
   padding: 25px;
   flex-direction: column;
+  background-color: white;
 }
 .poster-trailer {
   display: flex;
@@ -110,6 +115,13 @@
   gap: 20px;
 }
 .without-img {
+  width: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.movie-details {
+  width: 85%;
 }
 .movie {
   padding-top: 10px;
@@ -140,21 +152,40 @@
   justify-content: center;
   align-items: center;
   min-height: 90vh;
+  background-color: rgb(247, 239, 234);
 }
 .screenings-border {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   padding: 40px;
   min-height: 80vh;
   width: 800px;
   gap: 50px;
+  background-color: white;
+  border-radius: 10px;
+  margin: 50px;
 }
 .dates {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
+}
+.date-button {
+  border-radius: 10px;
+  background-color: rgb(237, 132, 132);
+  border: none;
+  padding: 7px;
+  font-size: 18px;
+  color: rgb(255, 255, 255);
+}
+.date-button:hover {
+  border: 2px solid rgb(161, 64, 64);
+}
+.column-screenings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .each-screen {
   display: flex;
@@ -173,11 +204,25 @@
 }
 .theatre-name {
   margin: 0px;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 300;
+}
+.times {
+  display: flex;
+  gap: 20px;
 }
 .time {
   margin: 0px;
+  font-size: 17px;
+  border-radius: 5px;
+  padding: 5px 7px;
+  color: green;
+  background-color: white;
+  border: 1px solid rgb(200, 196, 196);
+}
+.time:hover {
+  color: white;
+  background-color: green;
 }
 .area {
   padding-left: 30px;
@@ -188,6 +233,7 @@
   align-items: center;
   flex-direction: column;
   height: 90vh;
+  background-color: rgb(247, 239, 234);
 }
 .seating-info {
   display: flex;
@@ -199,17 +245,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
-  min-height: 60vh;
-  min-width: 50vw;
+  border-radius: 10px;
+  min-height: 55vh;
+  min-width: 45vw;
+  background-color: white;
+  flex-direction: column;
+  gap: 30px;
+  padding: 50px 0px 35px 0px;
 }
 .title-time {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 15px;
 }
 .continue {
-  font-size: 25px;
+  font-size: 20px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background-color: green;
+  color: white;
+  border: none;
+}
+
+.continue.disable {
+  background-color: #d1cfcf;
 }
 
 .App {
@@ -223,7 +283,7 @@
 }
 
 .seat {
-  padding: 10px;
+  padding: 8px;
   border: 1px solid black;
   cursor: pointer;
   text-align: center;
@@ -249,34 +309,86 @@
 }
 .booking-detail-background {
   display: flex;
+  width: 100vw;
   justify-content: center;
   align-items: center;
   height: 90vh;
   flex-direction: column;
-  gap: 50px;
+  gap: 40px;
+  background-color: rgb(247, 239, 234);
+
 }
 .booking-details {
   display: flex;
   justify-content: space-between;
-  border: 2px solid black;
   min-height: 70vh;
-  min-width: 70vw;
-  padding: 60px;
+  min-width: 60vw;
+  padding: 50px;
+  background-color: white;
+  border-radius: 10px;
+  gap: 40px;
+}
+.booking-with-heading{
+  width: 50%;
+}
+.booking-with-img{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+}
+.basic-details{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #646262;
 }
 .payment-box {
-  border: 1px solid black;
+  background-color: #f3f3f3;
+  
   width: 50%;
-  padding: 40px;
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.summary-details{
+  display: flex;
+
+}
+.sub-total{
+  font-size: 20px;
+  font-weight: 500;
+}
+.total{
+  font-size: 23px;
+  font-weight: 500;
+}
+.order-summary{
+  padding-bottom: 15px;
 }
 .pay-parallel {
   display: flex;
   justify-content: space-between;
+  font-size: 18px;
+  padding-bottom: 15px;
+  gap: 40px;
+}
+.pay-button {
+  background-color: green;
+  color: white;
+  font-size: 20px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
 }
 .booking-confirmation-background {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 90vh;
+  background-color: rgb(247, 239, 234);
 }
 .booking-confirmed-details {
   display: flex;
@@ -286,7 +398,8 @@
   min-height: 70vh;
   min-width: 70vw;
   padding: 60px;
-  border: 2px solid black;
+  background-color: white;
+  border-radius: 10px;
 }
 .my-bookings-background {
   display: flex;
@@ -310,6 +423,7 @@
   justify-content: center;
   align-items: center;
   height: 90vh;
+  background-color: rgb(247, 239, 234);
 }
 .user-profile-details {
   display: flex;
@@ -364,15 +478,25 @@
   border: none;
   border-radius: 4px;
 }
+.search-input {
+  width: 100%;
+  font-size: 20px;
+  padding: 7px;
+}
+.search-input::placeholder {
+  color: rgb(151, 149, 149); 
+  opacity: 1;
+  font-weight: 300;
+}
 
 .search-results-dropdown {
-  position: absolute; /* Make sure it's positioned correctly */
+  position: absolute;
   background-color: white;
   border: 1px solid #ccc;
   max-height: 200px;
   overflow-y: auto;
-  width: 100%; /* Same width as input */
-  z-index: 1000; /* Make sure it's above other elements */
+  width: 100%;
+  z-index: 1000;
 }
 
 .search-result-item {
@@ -383,7 +507,6 @@
 .search-result-item:hover {
   background-color: #f0f0f0;
 }
-
 .no-results-message {
   position: absolute;
   background-color: white;
@@ -415,7 +538,7 @@
 }
 
 .delete-account-button {
-  background-color: #ff4d4d; /* Red background */
+  background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 5px;
@@ -424,7 +547,7 @@
 }
 
 .delete-account-button:hover {
-  background-color: #ff1a1a; /* Darker red on hover */
+  background-color: #ff1a1a; 
 }
 .modal-overlay {
   position: fixed;
@@ -436,7 +559,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure modal is on top */
+  z-index: 1000; 
 }
 
 .modal-content {
@@ -479,3 +602,20 @@
 .cancel-button:hover {
   background-color: #999;
 }
+.profile-button {
+  background-color: #fff;
+}
+.all-movies-background {
+  background-color: rgb(247, 239, 234);
+  min-height: 100vh;
+}
+.language-genre {
+  display: flex;
+  padding: 40px 50px 0px 100px;
+  gap: 200px;
+}
+.filter-button {
+  border-radius: 5px;
+  border: none;
+}
+

@@ -49,22 +49,23 @@ function AllMovies({ city }) {
     "Action",
     "Drama",
     "Romance",
-    "Sci-Fi",
     "Crime",
     "Thriller",
     "Adventure",
     "Fantasy",
   ];
   return (
-    <div>
+    <div className="all-movies-background">
+      <div className="language-genre">
       <div className="language">
         <h4>Languages:</h4>
         {supportedLanguages.map((lang) => (
           <button
             key={lang}
             onClick={() => handleLanguageClick(lang)}
+            className="filter-button"
             style={{
-              backgroundColor: selectedLanguage === lang ? "blue" : "white",
+              backgroundColor: selectedLanguage === lang ? "green" : "white",
               color: selectedLanguage === lang ? "white" : "black",
             }}
           >
@@ -78,6 +79,7 @@ function AllMovies({ city }) {
           <button
             key={gen}
             onClick={() => handleGenreClick(gen)}
+            className="filter-button"
             style={{
               backgroundColor: selectedGenre === gen ? "green" : "white",
               color: selectedGenre === gen ? "white" : "black",
@@ -87,6 +89,8 @@ function AllMovies({ city }) {
           </button>
         ))}
       </div>
+      </div>
+      
       <div
         style={{ padding: "75px 50px 25px 50px", margin: "0px" }}
         className="row"

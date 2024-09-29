@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getToken } from "../helper/user";
 
 function ScreenSeating() {
@@ -9,6 +9,16 @@ function ScreenSeating() {
   const [screening, setScreening] = useState({});
   const [newlyBookedSeats, setNewlyBookedSeats] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check authentication and redirect to login if not authenticated
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      // If no token, redirect to login and pass current path in state for redirect after login
+      navigate("/signin", { state: { redirectTo: location.pathname } });
+    }
+  }, [navigate, location]);
 
   // Fetch seats
   useEffect(() => {
@@ -92,17 +102,38 @@ function ScreenSeating() {
       .catch((error) => console.log(error));
   }
 
+  function extractDayMonth(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+  
+    // Adding the appropriate suffix (st, nd, rd, th) to the day
+    const daySuffix = (day) => {
+      if (day > 3 && day < 21) return 'th'; // Covers 11th to 20th
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+  
+    return `${day}${daySuffix(day)} ${month}`;
+  }
+  
+
   return (
     <div className="seating-background">
       <div className="seating-info">
         {screening.movie_object ? (
           <div className="title-time">
-            <h1>{screening.movie_object.title}</h1>
-            <h4>
+            <h2>{screening.movie_object.title}</h2>
+            <h5>
               {screening.theatre_object.name},{" "}
-              {screening.theatre_object.address}
-            </h4>
-            <h4>{extractTime(screening.date_time)}</h4>
+              {screening.theatre_object.address}{" "}-{" "}
+              {extractDayMonth(screening.date_time)},{" "}
+              {extractTime(screening.date_time)}
+            </h5>
           </div>
         ) : (
           <p>Loading movie details...</p>
@@ -125,12 +156,12 @@ function ScreenSeating() {
               <p>Loading seats...</p>
             )}
           </div>
+          <img src="https://assetscdn1.paytm.com/movies_new/_next/static/media/screen-icon.8dd7f126.svg" alt="Screen Icon" style={{ transform: "scale(0.80)" }} />
         </div>
 
         <div>
-          {/* Disable the button if no seats are selected */}
           <button
-            className="continue"
+            className={`continue ${newlyBookedSeats.length === 0 ? "disable" : ""}`}
             onClick={handleClick}
             disabled={newlyBookedSeats.length === 0}
           >

@@ -1,12 +1,13 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { saveUser } from "../../helper/user";
 
 function SignIn() {
   let navigate = useNavigate();
+  const location = useLocation();
   const [requestResponse, setRequestResponse] = useState({
     textMessage: "",
     alertClass: "",
@@ -21,7 +22,8 @@ function SignIn() {
       .then(
         (response) => {
           saveUser(values.username, response.data.access);
-          navigate("/");
+          const redirectTo = location.state?.redirectTo || "/";
+          navigate(redirectTo);
         },
         (error) => {
           if (error.response && error.response.data) {
@@ -53,6 +55,7 @@ function SignIn() {
               <div className={requestResponse.alertClass} role="alert">
                 {requestResponse.textMessage}
               </div>
+              <h2>HELLO AGAIN!</h2>
               <br></br>
               {/* <h2>Login</h2>
               <hr style={{ marginBottom: "30px" }} /> */}

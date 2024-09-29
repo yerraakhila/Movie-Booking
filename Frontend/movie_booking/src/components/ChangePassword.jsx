@@ -1,12 +1,14 @@
 import React from "react";
 import axios from "axios";
+import { useEffect } from "react";
 import { getToken, clearUser } from "../helper/user";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 function ChangePassword() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = getToken();
 
   // Password validation schema
@@ -18,6 +20,13 @@ function ChangePassword() {
       .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
       .required("Please confirm your password"),
   });
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      navigate("/signin", { state: { redirectTo: location.pathname } });
+    }
+  }, [navigate, location]);
 
   const handleSubmit = (values, { setSubmitting, setErrors }) => {
     const data = {
@@ -44,7 +53,10 @@ function ChangePassword() {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{padding:"200px"}}>
+      
+
+     
       <h2>Change Password</h2>
       <Formik
         initialValues={{ newPassword: "", confirmPassword: "" }}
@@ -95,6 +107,7 @@ function ChangePassword() {
         )}
       </Formik>
     </div>
+    
   );
 }
 

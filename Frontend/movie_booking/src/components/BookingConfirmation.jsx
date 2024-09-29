@@ -36,6 +36,15 @@ function BookingConfirmation() {
     const formattedMinutes = String(minutes).padStart(2, "0");
     return `${hours}:${formattedMinutes}${amPm}`;
   }
+  function extractDate(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const year = date.getFullYear();
+    
+    return `${day}-${month}-${year}`; // Format as DD-MM-YYYY
+  }
+  
   return (
     <div className="booking-confirmation-background">
       <div className="booking-confirmed-details">
@@ -56,6 +65,7 @@ function BookingConfirmation() {
               {booking.screening_object.theatre_object.address}
             </h5>
             <h5>{extractTime(booking.screening_object.date_time)}</h5>
+            <h5>{extractDate(booking.screening_object.date_time)}</h5>
             <h5>
               {booking.seats
                 .map((seat) => `${seat.row}${seat.number}`)

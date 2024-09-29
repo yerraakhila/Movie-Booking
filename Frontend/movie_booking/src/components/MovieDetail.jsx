@@ -39,22 +39,26 @@ function MovieDetail() {
           <iframe
             width="715"
             height="402"
-            src={movie.trailer_url}
+            src={movie.trailer_url + "?rel=0"}
             frameborder="5"
           ></iframe>
         </div>
         <div className="without-img">
-          <h2 className="movie">{movie.title}</h2>
-          <p className="description">{movie.description}</p>
-          <h5 className="director">Director: {movie.director}</h5>
-          <h5 className="actors">Actors: {movie.actors}</h5>
-          <h5 className="languages">Languages: {movie.languages}</h5>
-          <h5 className="genre2">genre: {movie.genre}</h5>
-          <h5 className="rating">rating: {movie.rating}/10</h5>
-          <h5 className="duration">duration: {movie.running_time} min</h5>
-        </div>
-        <div className="book-tickets-div">
-          <button className="book-tickets" onClick={handleClick}>Book Tickets</button>
+          <div className="movie-details">
+            <h2 className="movie">{movie.title}</h2>
+            <p className="description">{movie.description}</p>
+            <h5 className="director">Director: {movie.director}</h5>
+            <h5 className="actors">Actors: {movie.actors}</h5>
+            <h5 className="languages">Languages: {movie.languages}</h5>
+            <h5 className="genre2">genre: {movie.genre}</h5>
+            <h5 className="rating">rating: {movie.rating}/10</h5>
+            <h5 className="duration">duration: {movie.running_time} min</h5>
+          </div>
+          <div className="book-tickets-div">
+            <button className="book-tickets" onClick={handleClick}>
+              Book Tickets
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -3,11 +3,12 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { getToken, clearUser } from "../helper/user";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import Modal from "./DeleteAccountModal"; // Import the Modal component
 
 function ProfileView() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isModalOpen, setModalOpen] = useState(false);
   const [userProfile, setUserProfile] = useState({
     name: "",
@@ -16,6 +17,13 @@ function ProfileView() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const token = getToken();
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      navigate("/signin", { state: { redirectTo: location.pathname } });
+    }
+  }, [navigate, location]);
 
   useEffect(() => {
     // Fetch user data from API
@@ -88,7 +96,7 @@ function ProfileView() {
   };
 
   return (
-    <div className="profile-center" style={{ backgroundColor: "#f7f0f0" }}>
+    <div className="profile-center user-profile-background"   >
       <div className="container">
         <h2>User Profile</h2>
         {!isEditing ? (
@@ -120,6 +128,7 @@ function ProfileView() {
 
             {/* Modal for delete account confirmation */}
             <Modal
+             
               isOpen={isModalOpen}
               onClose={() => setModalOpen(false)}
               onDelete={handleDeleteAccount} // Call delete when user confirms

@@ -62,17 +62,20 @@ class SeatSerializer(serializers.ModelSerializer):
 
 # Booking Serializer
 class BookingSerializer(serializers.ModelSerializer):
-    # user = serializers.StringRelatedField()
-    # screening = ScreeningSerializer()
-    # seats = serializers.PrimaryKeyRelatedField(many=True, queryset=Seat.objects.all())
-
-    # seat_objects = serializers.SerializerMethodField()
     seats = SeatSerializer(many=True, read_only=True)
     screening_object = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
-        fields = ["booking_id", "screening", "status", "seats", "screening_object"]
+        fields = [
+            "booking_id",
+            "screening",
+            "status",
+            "seats",
+            "screening_object",
+            "created_at",
+            "updated_at",
+        ]
 
     # def get_seat_objects(self, obj):
     #     seat_objects = Seat.objects.filter(

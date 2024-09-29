@@ -2,13 +2,13 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EachScreening from "./EachScreening";
-import { FaLessThan } from "react-icons/fa6";
-import { FaGreaterThan } from "react-icons/fa6";
 
 function AllScreenings() {
   const { id, date, city } = useParams();
   const [screenings, setScreenings] = useState([]);
-  const [theatreScreenings, settheatreScreenings] = useState([]);
+  const [theatreScreenings, setTheatreScreenings] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(date); // Track the selected date
+
   useEffect(() => {
     axios
       .get(
@@ -19,20 +19,20 @@ function AllScreenings() {
           "/" +
           date
       )
-      .then((Response) => setScreenings(Response.data))
+      .then((response) => setScreenings(response.data))
       .catch((error) => console.log(error));
-  }, [city,id,date]);
-  console.log(screenings);
+  }, [city, id, date]);
+
   function getNextFiveDaysFromToday() {
     const daysArray = Array.from({ length: 5 }, (_, i) => {
-      const date = new Date(); // Create a date object for today
-      date.setDate(date.getDate() + i); // Increment by i days
+      const date = new Date();
+      date.setDate(date.getDate() + i);
 
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
 
-      return `${year}-${month}-${day}`; // Return the formatted date
+      return `${year}-${month}-${day}`;
     });
 
     return daysArray;
@@ -40,20 +40,21 @@ function AllScreenings() {
 
   const datesArray = getNextFiveDaysFromToday();
   let navigate = useNavigate();
+
   function handleClick(e, selectedDate) {
     e.preventDefault();
+    setSelectedDate(selectedDate); // Update the selected date in state
     navigate("/" + city + "/movie_screenings/" + id + "/" + selectedDate);
   }
 
   useEffect(() => {
-    // Group screenings by theatre with the desired output structure
     const groupedByTheatre = screenings.reduce((acc, screening) => {
       const theatreId = screening.theatre;
       const theatreInfo = screening.theatre_object;
 
       if (!acc[theatreId]) {
         acc[theatreId] = {
-          theatre_id: theatreId, // Include the theatre ID
+          theatre_id: theatreId,
           theatre_name: theatreInfo.name,
           address: theatreInfo.address,
           screenings: [],
@@ -69,29 +70,33 @@ function AllScreenings() {
       return acc;
     }, {});
 
-    // Convert the grouped object into an array
-    const theatre_screenings_list = Object.values(groupedByTheatre);
-    settheatreScreenings(theatre_screenings_list);
+    const theatreScreeningsList = Object.values(groupedByTheatre);
+    setTheatreScreenings(theatreScreeningsList);
   }, [screenings]);
 
   return (
     <div className="all-screenings-background">
       <div className="screenings-border">
         <div className="dates">
-          <FaLessThan className="than" size={27} />
-          {datesArray.map((selectedDate, index) => (
-            <button onClick={(e) => handleClick(e, selectedDate)} key={index}>
-              {selectedDate}
-            </button> // Create a button for each date
+          {datesArray.map((dateOption, index) => (
+            <button
+              className="date-button"
+              onClick={(e) => handleClick(e, dateOption)}
+              key={index}
+              style={{
+                backgroundColor: selectedDate === dateOption ? "green" : "", // Change background if selected
+                color: selectedDate === dateOption ? "white" : "",
+              }}
+            >
+              {dateOption}
+            </button>
           ))}
-
-          <FaGreaterThan className="than" size={27} />
         </div>
-        <div className="column">
-          {theatreScreenings.map((theatre_screenings) => (
+        <div className="column column-screenings">
+          {theatreScreenings.map((theatreScreening) => (
             <EachScreening
-              data={theatre_screenings}
-              key={theatre_screenings.theatre_id}
+              data={theatreScreening}
+              key={theatreScreening.theatre_id}
             />
           ))}
         </div>
@@ -99,4 +104,5 @@ function AllScreenings() {
     </div>
   );
 }
+
 export default AllScreenings;

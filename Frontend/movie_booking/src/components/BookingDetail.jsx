@@ -27,15 +27,19 @@ function BookingDetail() {
   const navigate = useNavigate();
   function handleClick(e) {
     e.preventDefault();
-    console.log("akhila")
+    console.log("akhila");
     const token = getToken();
     axios
-      .put("http://127.0.0.1:8000/api/booking-pay/"+id+"/", {},{
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .put(
+        "http://127.0.0.1:8000/api/booking-pay/" + id + "/",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
       .then((response) => {
         const data = response.data;
         const booking_id = data.booking_id;
@@ -43,7 +47,7 @@ function BookingDetail() {
         navigate("/" + city + "/booking_confirmation/" + booking_id);
       })
       .catch((error) => console.log(error));
-}
+  }
 
   function extractTime(dateTimeString) {
     const date = new Date(dateTimeString);
@@ -54,52 +58,99 @@ function BookingDetail() {
     const formattedMinutes = String(minutes).padStart(2, "0");
     return `${hours}:${formattedMinutes}${amPm}`;
   }
+  function extractDayMonth(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
 
+    // Adding the appropriate suffix (st, nd, rd, th) to the day
+    const daySuffix = (day) => {
+      if (day > 3 && day < 21) return "th"; // Covers 11th to 20th
+      switch (day % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
+
+    return `${day}${daySuffix(day)} ${month}`;
+  }
+
+  // let premium = 0;
+  // let regular = 0;
+  // let convenience = 0;
+
+  // if (booking && booking.seats) {
+  //   premium = booking.seats.filter((seat) => seat.is_premium).length * 500;
+  //   regular = booking.seats.filter((seat) => !seat.is_premium).length * 300;
+  //   convenience = booking.seats.length * 50;
+  // }
+  // let sub_total = premium + regular + convenience;
+  // let gst = sub_total * 0.18;
+  // let total = sub_total * 1.18;
   let premium = 0;
   let regular = 0;
+  let gst = 0;
+  let sub_total = 0;
   let convenience = 0;
-
+  let total = 0;
   if (booking && booking.seats) {
     premium = booking.seats.filter((seat) => seat.is_premium).length * 500;
     regular = booking.seats.filter((seat) => !seat.is_premium).length * 300;
-    convenience = booking.seats.length * 50;
+    gst = (premium + regular) * 0.18;
+    sub_total = premium + regular + gst;
+    convenience = 50;
+    total = sub_total + convenience;
   }
-  let sub_total = premium + regular + convenience;
-  let gst = sub_total * 0.18;
-  let total = sub_total * 1.18;
+
   return (
     <div className="booking-detail-background">
       <div className="booking-details">
-        <div>
+        <div className="booking-with-heading">
           <h2>Booking Details:</h2>
+          <br></br>
+          <br></br>
           {booking &&
           booking.screening_object &&
           booking.screening_object.movie_object &&
           booking.screening_object.date_time ? (
-            <div>
-              <br></br>
-              <h4>
-                {booking.screening_object.movie_object.title} (
-                {booking.screening_object.movie_object.languages})
-              </h4>
+            <div className="booking-with-img">
+              <div className="basic-details">
+              <h4>{booking.screening_object.movie_object.title}</h4>
+              <h5>{booking.screening_object.movie_object.languages}</h5>
               <h5>{booking.screening_object.movie_object.genre}</h5>
-              <h5>
-                {booking.screening_object.theatre_object.name},
-                {booking.screening_object.theatre_object.address}
-              </h5>
+              <h5>{booking.screening_object.theatre_object.name}</h5>
+              <h5>{booking.screening_object.theatre_object.address}</h5>
               <h5>{extractTime(booking.screening_object.date_time)}</h5>
+              <h5>{extractDayMonth(booking.screening_object.date_time)}</h5>
               <h5>
                 {booking.seats
                   .map((seat) => `${seat.row}${seat.number}`)
                   .join(", ")}
               </h5>
+              </div>
+              
+              <div>
+                <img
+                  src={booking.screening_object.movie_object.poster_url}
+                  width={105}
+                  height={150}
+                ></img>
+              </div>
             </div>
           ) : (
             <p>Loading booking details...</p>
           )}
         </div>
         <div className="payment-box">
-          <h3>Order Summary:</h3>
+          <h3 className="order-summary">Order Summary:</h3>
+          <br></br>
+
           <div>
             {booking && booking.seats && booking.seats.length > 0 ? (
               <div>
@@ -148,29 +199,31 @@ function BookingDetail() {
               <p>Loading booking details...</p>
             )}
             <div className="pay-parallel">
-              <div>Convinience fee</div>
-              <div>₹{convenience}</div>
-            </div>
-            <hr />
-            <div className="pay-parallel">
-              <div>Sub total</div>
-              <div>₹{sub_total}</div>
-            </div>
-            <div className="pay-parallel">
-              <div>GST fee</div>
+              <div>GST fee (18%)</div>
               <div>₹{gst}</div>
             </div>
             <hr />
             <div className="pay-parallel">
-              <div>Total</div>
-              <div>₹{total}</div>
+              <div className="sub-total">Sub total</div>
+              <div className="sub-total">₹{sub_total}</div>
+            </div>
+            <div className="pay-parallel">
+              <div>Convenience fee</div>
+              <div>₹{convenience}</div>
+            </div>
+            <hr />
+            <div className="pay-parallel">
+              <div className="total">Total</div>
+              <div className="total">₹{total}</div>
             </div>
           </div>
         </div>
       </div>
 
       <div>
-        <button onClick={handleClick}>click here to Pay</button>
+        <button className="pay-button" onClick={handleClick}>
+          Click here to Pay
+        </button>
       </div>
     </div>
   );

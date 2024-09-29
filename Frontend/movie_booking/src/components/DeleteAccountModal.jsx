@@ -4,8 +4,8 @@ const Modal = ({ isOpen, onClose, onDelete }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="modal-overlay" >
+      <div className="modal-content"  style={{width:"600px"}}>
         <h2>Delete Account</h2>
         <p>
           Are you sure you want to delete your account? This action cannot be

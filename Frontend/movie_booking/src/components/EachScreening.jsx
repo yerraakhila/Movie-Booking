@@ -46,14 +46,14 @@ function EachScreening(props) {
     <div className="each-screen">
       <div className="left-theater-details">
         <div className="theatre-star">
-          <CiStar size={20} />
+          <CiStar size={25} />
           <h5 className="theatre-name">{theatre_name}</h5>
         </div>
         <div>
           <p className="area">{address}</p>
         </div>
       </div>
-      <div>
+      <div className="times">
         {screenings.map((obj) => (
           <button
             className="time"
