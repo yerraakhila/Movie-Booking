@@ -106,5 +106,5 @@ class Seat(models.Model):
     cost = models.PositiveIntegerField()
     screening = models.ForeignKey(Screening, on_delete=models.CASCADE)
     booking = models.ForeignKey(
-        Booking, on_delete=models.CASCADE, related_name="seats", null=True, blank=True
+        Booking, on_delete=models.SET_NULL, related_name="seats", null=True, blank=True
     )

@@ -11,20 +11,26 @@ function ScreenSeating() {
   const [newlyBookedSeats, setNewlyBookedSeats] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const token = getToken();
   // Check authentication and redirect to login if not authenticated
   useEffect(() => {
-    const token = getToken();
+
     if (!token) {
       // If no token, redirect to login and pass current path in state for redirect after login
       navigate("/signin", { state: { redirectTo: location.pathname } });
     }
   }, [navigate, location]);
-
+  
   // Fetch seats
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8000/api/${city}/screening-seats/${id}/`)
+      .get(`http://127.0.0.1:8000/api/${city}/screening-seats/${id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
       .then((response) => setSeats(response.data))
       .catch((error) => console.log(error));
   }, [id, city]);

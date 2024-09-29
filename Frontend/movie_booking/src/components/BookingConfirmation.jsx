@@ -84,23 +84,24 @@ function BookingConfirmation() {
               alt="Movie Poster"
             />
             <div>
-              <h1>
+              <h2>
                 {booking.screening_object.movie_object.title} (
                 {booking.screening_object.movie_object.languages})
-              </h1>
-              <h3>{booking.screening_object.movie_object.genre}</h3>
-              <h4>
+              </h2>
+              <h5>{booking.screening_object.movie_object.genre}</h5>
+              <br></br>
+              <h5>
                 {booking.screening_object.theatre_object.name},{" "}
                 {booking.screening_object.theatre_object.address}
-              </h4>
-              <h4>{extractTime(booking.screening_object.date_time)}</h4>
-              <h4>{extractDate(booking.screening_object.date_time)}</h4>
-              <h4>
+              </h5>
+              <h5>{extractTime(booking.screening_object.date_time)}</h5>
+              <h5>{extractDate(booking.screening_object.date_time)}</h5>
+              <h5>
                 {booking.seats
                   .map((seat) => `${seat.row}${seat.number}`)
                   .join(", ")}
-              </h4>
-              <h4>Price: ₹{calculateTotal().toFixed(2)}</h4>
+              </h5>
+              <h5>Price: ₹{calculateTotal().toFixed(2)}</h5>
             </div>
           </div>
         ) : (

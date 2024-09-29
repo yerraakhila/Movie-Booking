@@ -145,7 +145,7 @@ class MovieScreeningsView(APIView):
 
 # click on particular screening
 class ScreeningSeatsView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, city, screening_id):
         try:
