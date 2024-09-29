@@ -11,6 +11,7 @@ function Navbar() {
   const { city } = useParams();
   const [searchInput, setSearchInput] = useState(""); // State for search input
   const [searchResults, setSearchResults] = useState([]); // State for search results
+
   let navigate = useNavigate();
   let loginStatus = getUser() ? true : false;
   function handleLogout() {
@@ -56,6 +57,7 @@ function Navbar() {
     setSearchResults([]);
   };
 
+
   return (
     <div className="navbar" style={{
       
@@ -73,7 +75,7 @@ function Navbar() {
           placeholder="Search for movies..."
           className="search-input"
         />
-        {searchInput.length >= 3 && searchResults?.length === 0 && (
+        {searchInput.length >= 3 && searchResults?.length === 0 &&(
           <div className="no-results-message">No results found.</div>
         )}
         {searchResults?.length > 0 && (
@@ -86,7 +88,7 @@ function Navbar() {
               >
                 {movie.title}{" "}
                 {
-                  /* Adjust based on your movie object structure */
+                 
                   console.log(movie)
                 }
               </div>
