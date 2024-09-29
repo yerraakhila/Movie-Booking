@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getToken } from "../helper/user";
+import { formatDateTime } from "../helper/dateHelper";
 
 function ScreenSeating() {
   const [seats, setSeats] = useState([]);
@@ -45,6 +46,10 @@ function ScreenSeating() {
           // Remove seat if already selected
           return prevSeats.filter((s) => s.id !== seat.id);
         } else {
+          if (newlyBookedSeats.length >= 10) {
+            //allow only 10 tickets once
+            return newlyBookedSeats;
+          }
           // Add seat if not selected
           return [...prevSeats, seat];
         }
@@ -57,17 +62,6 @@ function ScreenSeating() {
     return `seat ${seat.is_premium ? "premium" : "regular"} ${
       newlyBookedSeats.some((s) => s.id === seat.id) ? "selected" : ""
     } ${seat.is_available ? "" : "booked"}`;
-  }
-
-  // Extract and format time from date string
-  function extractTime(dateTimeString) {
-    const date = new Date(dateTimeString);
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amPm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    return `${hours}:${formattedMinutes}${amPm}`;
   }
 
   // Handle continue button click
@@ -102,26 +96,6 @@ function ScreenSeating() {
       .catch((error) => console.log(error));
   }
 
-  function extractDayMonth(dateTimeString) {
-    const date = new Date(dateTimeString);
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' });
-  
-    // Adding the appropriate suffix (st, nd, rd, th) to the day
-    const daySuffix = (day) => {
-      if (day > 3 && day < 21) return 'th'; // Covers 11th to 20th
-      switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-      }
-    };
-  
-    return `${day}${daySuffix(day)} ${month}`;
-  }
-  
-
   return (
     <div className="seating-background">
       <div className="seating-info">
@@ -130,9 +104,8 @@ function ScreenSeating() {
             <h2>{screening.movie_object.title}</h2>
             <h5>
               {screening.theatre_object.name},{" "}
-              {screening.theatre_object.address}{" "}-{" "}
-              {extractDayMonth(screening.date_time)},{" "}
-              {extractTime(screening.date_time)}
+              {screening.theatre_object.address} -{" "}
+              {formatDateTime(screening.date_time)}
             </h5>
           </div>
         ) : (
@@ -156,12 +129,18 @@ function ScreenSeating() {
               <p>Loading seats...</p>
             )}
           </div>
-          <img src="https://assetscdn1.paytm.com/movies_new/_next/static/media/screen-icon.8dd7f126.svg" alt="Screen Icon" style={{ transform: "scale(0.80)" }} />
+          <img
+            src="https://assetscdn1.paytm.com/movies_new/_next/static/media/screen-icon.8dd7f126.svg"
+            alt="Screen Icon"
+            style={{ transform: "scale(0.80)" }}
+          />
         </div>
 
         <div>
           <button
-            className={`continue ${newlyBookedSeats.length === 0 ? "disable" : ""}`}
+            className={`continue ${
+              newlyBookedSeats.length === 0 ? "disable" : ""
+            }`}
             onClick={handleClick}
             disabled={newlyBookedSeats.length === 0}
           >

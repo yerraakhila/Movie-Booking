@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../helper/user";
+import { formatDateTime } from "../helper/dateHelper";
 
 function BookingDetail() {
   const { id, city } = useParams();
@@ -49,50 +50,6 @@ function BookingDetail() {
       .catch((error) => console.log(error));
   }
 
-  function extractTime(dateTimeString) {
-    const date = new Date(dateTimeString);
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amPm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    return `${hours}:${formattedMinutes}${amPm}`;
-  }
-  function extractDayMonth(dateTimeString) {
-    const date = new Date(dateTimeString);
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "short" });
-
-    // Adding the appropriate suffix (st, nd, rd, th) to the day
-    const daySuffix = (day) => {
-      if (day > 3 && day < 21) return "th"; // Covers 11th to 20th
-      switch (day % 10) {
-        case 1:
-          return "st";
-        case 2:
-          return "nd";
-        case 3:
-          return "rd";
-        default:
-          return "th";
-      }
-    };
-
-    return `${day}${daySuffix(day)} ${month}`;
-  }
-
-  // let premium = 0;
-  // let regular = 0;
-  // let convenience = 0;
-
-  // if (booking && booking.seats) {
-  //   premium = booking.seats.filter((seat) => seat.is_premium).length * 500;
-  //   regular = booking.seats.filter((seat) => !seat.is_premium).length * 300;
-  //   convenience = booking.seats.length * 50;
-  // }
-  // let sub_total = premium + regular + convenience;
-  // let gst = sub_total * 0.18;
-  // let total = sub_total * 1.18;
   let premium = 0;
   let regular = 0;
   let gst = 0;
@@ -100,8 +57,14 @@ function BookingDetail() {
   let convenience = 0;
   let total = 0;
   if (booking && booking.seats) {
-    premium = booking.seats.filter((seat) => seat.is_premium).length * 500;
-    regular = booking.seats.filter((seat) => !seat.is_premium).length * 300;
+    premium = booking.seats
+      .filter((seat) => seat.is_premium)
+      .reduce((total, seat) => total + seat.cost, 0);
+
+    regular = booking.seats
+      .filter((seat) => !seat.is_premium)
+      .reduce((total, seat) => total + seat.cost, 0);
+
     gst = (premium + regular) * 0.18;
     sub_total = premium + regular + gst;
     convenience = 50;
@@ -121,20 +84,14 @@ function BookingDetail() {
           booking.screening_object.date_time ? (
             <div className="booking-with-img">
               <div className="basic-details">
-              <h4>{booking.screening_object.movie_object.title}</h4>
-              <h5>{booking.screening_object.movie_object.languages}</h5>
-              <h5>{booking.screening_object.movie_object.genre}</h5>
-              <h5>{booking.screening_object.theatre_object.name}</h5>
-              <h5>{booking.screening_object.theatre_object.address}</h5>
-              <h5>{extractTime(booking.screening_object.date_time)}</h5>
-              <h5>{extractDayMonth(booking.screening_object.date_time)}</h5>
-              <h5>
-                {booking.seats
-                  .map((seat) => `${seat.row}${seat.number}`)
-                  .join(", ")}
-              </h5>
+                <h4>{booking.screening_object.movie_object.title}</h4>
+                <h5>{booking.screening_object.movie_object.languages}</h5>
+                <h5>{booking.screening_object.movie_object.genre}</h5>
+                <h5>{booking.screening_object.theatre_object.name}</h5>
+                <h5>{booking.screening_object.theatre_object.address}</h5>
+                <h5>{formatDateTime(booking.screening_object.date_time)}</h5>
               </div>
-              
+
               <div>
                 <img
                   src={booking.screening_object.movie_object.poster_url}

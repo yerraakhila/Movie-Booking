@@ -3,11 +3,13 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getToken } from "../helper/user";
 import { Link } from "react-router-dom";
+import { TiTick } from "react-icons/ti";
 
 function BookingConfirmation() {
   const { id, city } = useParams();
   const [booking, setBooking] = useState({});
   const token = getToken();
+
   useEffect(() => {
     axios
       .get(
@@ -36,52 +38,81 @@ function BookingConfirmation() {
     const formattedMinutes = String(minutes).padStart(2, "0");
     return `${hours}:${formattedMinutes}${amPm}`;
   }
+
   function extractDate(dateTimeString) {
     const date = new Date(dateTimeString);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    
-    return `${day}-${month}-${year}`; // Format as DD-MM-YYYY
+    return `${day}-${month}-${year}`;
   }
-  
+
+  function calculateSeatCost() {
+    return booking.seats
+      ? booking.seats.reduce((acc, seat) => acc + seat.cost, 0)
+      : 0;
+  }
+
+  function calculateTotal() {
+    const seats_cost = calculateSeatCost();
+    const gst = seats_cost * 0.18;
+    const convenience = 50;
+    return seats_cost + gst + convenience;
+  }
+
   return (
     <div className="booking-confirmation-background">
       <div className="booking-confirmed-details">
-        <h2>Booking done successfully</h2>
+        <div className="confirmed-heading">
+          <div className="booking-tick">
+            <h2 className="booking-confirmed">
+              Booking confirmed successfully
+            </h2>
+
+            <TiTick className="tick" size={25} />
+          </div>
+        </div>
         {booking &&
         booking.screening_object &&
         booking.screening_object.movie_object &&
         booking.screening_object.date_time ? (
-          <div>
-            <br></br>
-            <h4>
-              {booking.screening_object.movie_object.title} (
-              {booking.screening_object.movie_object.languages})
-            </h4>
-            <h5>{booking.screening_object.movie_object.genre}</h5>
-            <h5>
-              {booking.screening_object.theatre_object.name},
-              {booking.screening_object.theatre_object.address}
-            </h5>
-            <h5>{extractTime(booking.screening_object.date_time)}</h5>
-            <h5>{extractDate(booking.screening_object.date_time)}</h5>
-            <h5>
-              {booking.seats
-                .map((seat) => `${seat.row}${seat.number}`)
-                .join(", ")}
-            </h5>
+          <div className="confirmed-details">
+            <img
+              src={booking.screening_object.movie_object.poster_url}
+              width="280"
+              height={400}
+              alt="Movie Poster"
+            />
+            <div>
+              <h1>
+                {booking.screening_object.movie_object.title} (
+                {booking.screening_object.movie_object.languages})
+              </h1>
+              <h3>{booking.screening_object.movie_object.genre}</h3>
+              <h4>
+                {booking.screening_object.theatre_object.name},{" "}
+                {booking.screening_object.theatre_object.address}
+              </h4>
+              <h4>{extractTime(booking.screening_object.date_time)}</h4>
+              <h4>{extractDate(booking.screening_object.date_time)}</h4>
+              <h4>
+                {booking.seats
+                  .map((seat) => `${seat.row}${seat.number}`)
+                  .join(", ")}
+              </h4>
+              <h4>Price: ₹{calculateTotal().toFixed(2)}</h4>
+            </div>
           </div>
         ) : (
           <p>Loading booking details...</p>
         )}
+
         <h5 className="text-center">
-          Want to go to my bookings. Click <Link to="/my_bookings">here</Link>
-           <br/>
-           Want to go to home. Click <Link to="/">here.</Link>
+          See all your bookings <Link to="/my_bookings">here</Link>.
         </h5>
       </div>
     </div>
   );
 }
+
 export default BookingConfirmation;
