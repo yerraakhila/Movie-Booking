@@ -5,8 +5,8 @@ import { useEffect } from "react";
 function HomePage() {
   let navigate = useNavigate()
   useEffect(() => {
-    const city = getCity(); // Get the city
-    navigate("/movies/" + city); // Navigate to the city route
+    const city = getCity(); 
+    navigate("/movies/" + city);
   }, [navigate]); 
   return <></>;
 }

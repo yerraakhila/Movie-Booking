@@ -7,7 +7,7 @@ function AllScreenings() {
   const { id, date, city } = useParams();
   const [screenings, setScreenings] = useState([]);
   const [theatreScreenings, setTheatreScreenings] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(date); // Track the selected date
+  const [selectedDate, setSelectedDate] = useState(date); 
 
   useEffect(() => {
     axios
@@ -43,7 +43,7 @@ function AllScreenings() {
 
   function handleClick(e, selectedDate) {
     e.preventDefault();
-    setSelectedDate(selectedDate); // Update the selected date in state
+    setSelectedDate(selectedDate); 
     navigate("/" + city + "/movie_screenings/" + id + "/" + selectedDate);
   }
 

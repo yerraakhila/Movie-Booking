@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"; // Import useEffect for handling side effects
-import { BiCameraMovie } from "react-icons/bi"; // Ensure you import this
-import { CgProfile } from "react-icons/cg"; // Ensure you import this
+import { useState, useEffect } from "react";
+import { BiCameraMovie } from "react-icons/bi";
+import { CgProfile } from "react-icons/cg";
 import { useNavigate, useParams } from "react-router-dom";
 import { setCity } from "../helper/user";
 import axios from "axios";
@@ -9,8 +9,8 @@ import { getUser, clearUser } from "../helper/user";
 
 function Navbar() {
   const { city } = useParams();
-  const [searchInput, setSearchInput] = useState(""); // State for search input
-  const [searchResults, setSearchResults] = useState([]); // State for search results
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   let navigate = useNavigate();
   let loginStatus = getUser() ? true : false;
@@ -21,8 +21,8 @@ function Navbar() {
 
   const handleCityChange = (event) => {
     const selectedCity = event.target.value;
-    setCity(selectedCity); // Save the selected city to local storage
-    navigate("/movies/" + selectedCity); // Navigate to the new city route
+    setCity(selectedCity);
+    navigate("/movies/" + selectedCity);
   };
 
   const handleSearchChange = (event) => {
@@ -57,17 +57,21 @@ function Navbar() {
     setSearchResults([]);
   };
 
-
   return (
-    <div className="navbar" style={{
-      
-      padding: "15px 25px"
-    }}>
+    <div
+      className="navbar"
+      style={{
+        padding: "15px 25px",
+      }}
+    >
       <div className="logo-with-appname" onClick={() => navigate("/")}>
         <BiCameraMovie size={40} />
         <span className="app-name">bookmymovie</span>
       </div>
-      <div className="search-container" style={{ position: "relative",width: "500px"}}>
+      <div
+        className="search-container"
+        style={{ position: "relative", width: "500px" }}
+      >
         <input
           type="text"
           value={searchInput}
@@ -75,7 +79,7 @@ function Navbar() {
           placeholder="Search for movies..."
           className="search-input"
         />
-        {searchInput.length >= 3 && searchResults?.length === 0 &&(
+        {searchInput.length >= 3 && searchResults?.length === 0 && (
           <div className="no-results-message">No results found.</div>
         )}
         {searchResults?.length > 0 && (
@@ -86,11 +90,7 @@ function Navbar() {
                 className="search-result-item"
                 onClick={() => handleResultClick(movie.id)}
               >
-                {movie.title}{" "}
-                {
-                 
-                  console.log(movie)
-                }
+                {movie.title}
               </div>
             ))}
           </div>
@@ -98,24 +98,19 @@ function Navbar() {
       </div>
       <div className="city-and-profile">
         <div className="city-selection">
-          <label htmlFor="cities" className="select-city">
-           
-          </label>
+          <label htmlFor="cities" className="select-city"></label>
           <select
             id="cities"
             className="options"
-            value={city} // Set the value to the current city
-            onChange={handleCityChange} // Call the handler on change
+            value={city}
+            onChange={handleCityChange}
           >
             <option value="Bangalore">Bangalore</option>
             <option value="Hyderabad">Hyderabad</option>
             <option value="Mumbai">Mumbai</option>
           </select>
         </div>
-        {/* <div className="profile-div">
-          <CgProfile size={40} />
-          <span className="profile-span">Profile</span>
-        </div> */}
+
         <div className="icon profile">
           <button
             className="profile-button"
@@ -157,7 +152,7 @@ function Navbar() {
               </Link>
             </div>
           )}
-          <p style={{ margin: "0px", fontWeight: "600"}}>Profile</p>
+          <p style={{ margin: "0px", fontWeight: "600" }}>Profile</p>
         </div>
       </div>
     </div>

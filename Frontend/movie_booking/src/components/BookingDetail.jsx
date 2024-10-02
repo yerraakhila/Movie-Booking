@@ -31,7 +31,7 @@ function BookingDetail() {
 
         // Calculate the time difference in seconds
         const timeElapsed = Math.floor((currentTime - createdAt) / 1000);
-        const remainingTime = Math.max(60 - timeElapsed, 0); // 180 seconds minus elapsed time
+        const remainingTime = Math.max(60 - timeElapsed, 0); 
 
         setTimeLeft(remainingTime);
       })

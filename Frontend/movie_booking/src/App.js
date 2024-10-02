@@ -10,7 +10,7 @@ import ScreeningSeatingPage from "./pages/ScreeningSeatingPage/ScreeningSeatingP
 import BookingDetailPage from "./pages/BookingDetailPage/BookingDetailPage.jsx";
 import BookingConfirmedPage from "./pages/BookingConfirmedPage/BookingConfirmedPage.jsx";
 import LandingPage from "./pages/LandingPage/LandingPage.jsx";
-import MyBookingsPage from "./pages/MyBookingsPage/MyBookingsPage.jsx";
+import MyBookingsPage from "./pages/MyBookings/MyBookingsPage.jsx";
 import UserProfilePage from "./pages/UserProfilePage/UserProfilePage.jsx";
 import ChangePasswordPage from "./pages/UserProfilePage/ChangePasswordPage.jsx";
 

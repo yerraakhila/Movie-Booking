@@ -5,30 +5,29 @@ function EachScreening(props) {
   const { city } = useParams();
   let navigate = useNavigate();
   const { theatre_name, address, screenings } = props.data;
-  function extractTime(dateTimeString) {
-    // Create a Date object from the input string
-    const date = new Date(dateTimeString);
 
-    // Extract the hours and minutes
+  function extractTime(dateTimeString) {
+    const date = new Date(dateTimeString);
     let hours = date.getHours();
     const minutes = date.getMinutes();
-
-    // Determine AM or PM suffix
     const amPm = hours >= 12 ? "PM" : "AM";
-
-    // Convert hours from 24-hour to 12-hour format
-    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
-
-    // Format minutes to ensure two digits
+    hours = hours % 12 || 12;
     const formattedMinutes = String(minutes).padStart(2, "0");
-
-    // Return the formatted time string
     return `${hours}:${formattedMinutes}${amPm}`;
   }
-  
+
   function handleClick(e, id) {
     e.preventDefault();
     navigate("/" + city + "/screening_seats/" + id);
+  }
+
+  function isPastScreening(screening) {
+    const currentDateTime = new Date();
+    return new Date(screening.date_time) < currentDateTime;
+  }
+
+  function getScreeningClassName(screening) {
+    return isPastScreening(screening) ? "time past" : "time";
   }
 
   return (
@@ -45,9 +44,10 @@ function EachScreening(props) {
       <div className="times">
         {screenings.map((obj) => (
           <button
-            className="time"
+            className={getScreeningClassName(obj)}
             onClick={(e) => handleClick(e, obj.id)}
             key={obj.id}
+            disabled={isPastScreening(obj)}
           >
             {extractTime(obj.date_time)}
           </button>
@@ -56,4 +56,5 @@ function EachScreening(props) {
     </div>
   );
 }
+
 export default EachScreening;

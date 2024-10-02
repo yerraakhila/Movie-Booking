@@ -27,7 +27,6 @@ def generate_seats(screening):
                     row=row,
                     number=number,
                     is_premium=is_premium,
-                    is_booked=False,
                     cost=cost,
                     screening=screening,
                 )
@@ -63,7 +62,7 @@ def generate_random_screening_times():
 
 
 def generate_screening(movie, theatre):
-    for i in range(1, 6):  # Create screenings for the next 5 days
+    for i in range(0, 6):  # Create screenings for the next 5 days
         # Get random screening times for the day
         screening_times = generate_random_screening_times()
 

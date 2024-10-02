@@ -89,12 +89,6 @@ class BookingSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
-    # def get_seat_objects(self, obj):
-    #     seat_objects = Seat.objects.filter(
-    #         id__in=obj.seats.values_list("id", flat=True)
-    #     )  # Get all seat objects related to the booking
-    #     return SeatSerializer(seat_objects, many=True).data
-
     def get_screening_object(self, obj):
         screening_object = Screening.objects.get(id=obj.screening.id)
         return ScreeningSerializer(screening_object).data

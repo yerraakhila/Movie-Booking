@@ -34,7 +34,6 @@ function MyBookings() {
           <h2>My Bookings</h2>
           <hr></hr>
         </div>
-
         <div className="bookings-column">
           {bookings.length === 0 ? (
             <p>No bookings found.</p>

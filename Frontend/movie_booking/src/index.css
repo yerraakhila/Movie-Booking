@@ -70,6 +70,9 @@
 .card-replace {
   margin-bottom: 50px;
 }
+.card-replace:hover{
+  
+}
 .title {
   padding-top: 10px;
   width: 250px;
@@ -219,11 +222,26 @@
   color: green;
   background-color: white;
   border: 1px solid rgb(200, 196, 196);
+  cursor: pointer;
 }
+
 .time:hover {
   color: white;
   background-color: green;
 }
+
+.time.past {
+  color: grey;
+  background-color: #f0f0f0;
+  border: 1px solid #d3d3d3;
+  cursor: not-allowed;
+}
+
+.time.past:hover {
+  color: grey;
+  background-color: #f0f0f0;
+}
+
 .area {
   padding-left: 30px;
 }
@@ -652,11 +670,10 @@
   justify-content: space-between;
   padding: 10px;
 }
-.booking-row:hover{
+.booking-row:hover {
   border: 1px solid black;
   background-color: rgb(230, 226, 226);
   border-radius: 10px;
-
 }
 .poster-title {
   display: flex;
